@@ -9,7 +9,7 @@
                     "name": "X Movement",
                     "type": "Value",
                     "id": "07f44841-2247-436a-9726-43e180c1badd",
-                    "expectedControlType": "",
+                    "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -21,7 +21,7 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
