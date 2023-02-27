@@ -1,16 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
- 
+
+//Note: Use proper conventions: https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions 
+
 public class Singleton<T> : MonoBehaviour where T : Component
 {
-    public static T instance;
+    public static T Instance;
 
     public virtual void Awake()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this as T;
+            Instance = this as T;
         }
         else
         {
