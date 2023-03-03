@@ -271,6 +271,7 @@ GameObject:
   - component: {fileID: 730631445}
   - component: {fileID: 730631444}
   - component: {fileID: 730631447}
+  - component: {fileID: 730631448}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -313,7 +314,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 7
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -377,6 +378,18 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
+--- !u!114 &730631448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 730631443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cecd6fa9c910e74e8b121533579f583, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &789773472
 GameObject:
   m_ObjectHideFlags: 0
@@ -390,7 +403,7 @@ GameObject:
   - component: {fileID: 789773475}
   m_Layer: 0
   m_Name: Square
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
