@@ -7,10 +7,12 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-
-    //Desmos for acceleration: https://www.desmos.com/calculator/emgmts7fzm 
-
-    
+    //In order of priority (if touching multiple, a higher number will take precendence)
+    public enum Surface
+    {
+        air,
+        ground
+    }
 
     private readonly struct MovementValues
     {
@@ -21,22 +23,29 @@ public class PlayerMovement : MonoBehaviour
             this.minAccel = minAccel;
         }
 
-        float maxAccel { get;}
-        float accelFalloff { get;}
-        float minAccel { get; }
+        public readonly float maxAccel;
+        public readonly float accelFalloff;
+        public readonly float minAccel;
     }
 
-    //In order of priority (if touching multiple, a higher number will take precendence)
-    public enum Surface
+    float CalculateAcceleration(float velocity, MovementValues values)
     {
-        air,
-        ground
+        //Desmos for acceleration: https://www.desmos.com/calculator/emgmts7fzm
+        
+        if(velocity <= 0)
+        {
+            return values.maxAccel;
+        }
+        else
+        {
+            return (1 / ((values.accelFalloff * velocity) + (1 / (values.maxAccel - values.minAccel)))) + values.minAccel;
+        }
     }
 
-    private readonly Dictionary<Surface, float> speeds = new Dictionary<Surface, float>()
+    private readonly Dictionary<Surface, MovementValues> surfaceProperties = new Dictionary<Surface, MovementValues>()
     {
-        {Surface.air, 10},
-        {Surface.ground, 30}
+        {Surface.air, new MovementValues (5, 0.005f, 0.5f)},
+        {Surface.ground, new MovementValues (20, 0.01f, 1)}
     };
 
     private readonly Dictionary<string, Surface> tagToSurface = new Dictionary<string, Surface>()
@@ -69,7 +78,8 @@ public class PlayerMovement : MonoBehaviour
         //Debug.Log(XInput);
         if (XInput != 0)
         {
-            playerRB.AddForce(new Vector2(XInput * speeds[highestPrioritySurface] * Time.fixedDeltaTime, 0), ForceMode2D.Impulse);
+            float accel = CalculateAcceleration(playerRB.velocity.x * XInput, surfaceProperties[highestPrioritySurface]);
+            playerRB.AddForce(new Vector2(XInput * accel * Time.fixedDeltaTime, 0), ForceMode2D.Impulse);
         }
 
         //Debug.Log(ControlsManager.Instance.Jump);
