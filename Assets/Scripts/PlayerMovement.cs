@@ -35,18 +35,13 @@ public class PlayerMovement : MonoBehaviour
 
     private Surface highestPrioritySurface = Surface.air;
     private Rigidbody2D playerRB;
+    private Vector2 totalContactNormals = Vector3.zero;
 
     // Start is called before the first frame update
     void Start()
     {
         playerRB = GetComponent<Rigidbody2D>();
         Time.fixedDeltaTime = (float)1 / 100; //100 fps
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     void FixedUpdate()
@@ -80,15 +75,14 @@ public class PlayerMovement : MonoBehaviour
         }
         if (ControlsManager.Instance.Jump && highestPrioritySurface == Surface.ground && !stillTouchingJumpSurface)
         {
-            playerRB.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            playerRB.AddForce(totalContactNormals.normalized * jumpForce, ForceMode2D.Impulse);
             stillTouchingJumpSurface = true;
             Debug.Log("Jump");
-            
         }
 
         highestPrioritySurface = Surface.air;
+        totalContactNormals = Vector3.zero;
     }
-
 
     void OnCollisionEnter2D(Collision2D col)
     {
@@ -103,6 +97,13 @@ public class PlayerMovement : MonoBehaviour
     private void UpdateCollisionInfo(Collision2D col)
     {
         string tag = col.gameObject.tag;
+
+        ContactPoint2D[] contacts = new ContactPoint2D[col.contactCount];
+        col.GetContacts(contacts);
+        foreach(ContactPoint2D point in contacts)
+        {
+            totalContactNormals += point.normal;
+        }
         
         //If the tag of the object is a known surface
         //Maybe in the future use a script on the object and don't read from the tag?
