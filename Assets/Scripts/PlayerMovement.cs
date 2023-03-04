@@ -24,12 +24,13 @@ public class PlayerMovement : MonoBehaviour
     {
         //{Surface.air, new MovementValues (5, 0.005f, 0.5f)},
         //{Surface.ground, new MovementValues (20, 0.01f, 1)}
-        {Surface.air, new MovementValues (10, 0, 10, 10, 0.01f, 2)},
-        {Surface.ground, new MovementValues (25, 0, 25, 25, 0.01f, 5)}
+        {Surface.air, new MovementValues (10, 0.05f, 7, 7, 0.03f, 1)},
+        {Surface.ground, new MovementValues (40, 0.01f, 28, 30, 0.01f, 3)}
     };
 
     //Jumping
-    private readonly float jumpForce = 10f;
+    private readonly float jumpForce = 10f; //change to const later? (or maybe the value will be modifiable?)
+    private readonly Vector2 jumpBias = new Vector2(0, 0.03f);
     private bool stillTouchingJumpSurface = false;
 
 
@@ -62,7 +63,14 @@ public class PlayerMovement : MonoBehaviour
         //Decleration
         float playerVelocityDirection = Mathf.Sign(playerRB.velocity.x);
         float decel = CalculateDeceleration(Mathf.Abs(playerRB.velocity.x), surfaceProperties[highestPrioritySurface]);
-        playerRB.AddForce(new Vector2(playerVelocityDirection * -1 * decel * Time.fixedDeltaTime, 0), ForceMode2D.Impulse);
+        if(decel * Time.fixedDeltaTime >= Mathf.Abs(playerRB.velocity.x))
+        {
+            playerRB.AddForce(new Vector2(-1 * playerRB.velocity.x, 0), ForceMode2D.Impulse);
+        }
+        else
+        {
+            playerRB.AddForce(new Vector2(playerVelocityDirection * -1 * decel * Time.fixedDeltaTime, 0), ForceMode2D.Impulse);
+        }
 
         Debug.Log("Accel: " + accel + " Decel: " + decel + " Net: " + (accel * Mathf.Sign(XInput) - decel * playerVelocityDirection));
 
@@ -75,7 +83,8 @@ public class PlayerMovement : MonoBehaviour
         }
         if (ControlsManager.Instance.Jump && highestPrioritySurface == Surface.ground && !stillTouchingJumpSurface)
         {
-            playerRB.AddForce(totalContactNormals.normalized * jumpForce, ForceMode2D.Impulse);
+            Vector2 jumpDirection = (totalContactNormals.normalized + jumpBias).normalized;
+            playerRB.AddForce(jumpDirection * jumpForce, ForceMode2D.Impulse);
             stillTouchingJumpSurface = true;
             Debug.Log("Jump");
         }
