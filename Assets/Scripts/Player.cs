@@ -15,9 +15,15 @@ public class Player : Singleton<Player>
     public PlayerMovement Movement { get => movement; }
     public PlayerData Data { get => data; }
 
+    //Allows other scripts to access the player's position
+    public Vector3 PlayerPos { get => transform.position; }
+
     //Function called on start
-    private void Start()
+    protected override void Awake()
     {
+        //Singleton set up code
+        base.Awake();
+        
         //Gets references
         movement = GetComponent<PlayerMovement>();
         data = GetComponent<PlayerData>();

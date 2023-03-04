@@ -14,49 +14,26 @@ public class PlayerMovement : MonoBehaviour
         ground
     }
 
-    private readonly struct MovementValues
-    {
-        public MovementValues(float maxAccel, float accelFalloff, float minAccel)
-        {
-            this.maxAccel = maxAccel;
-            this.accelFalloff = accelFalloff;
-            this.minAccel = minAccel;
-        }
-
-        public readonly float maxAccel;
-        public readonly float accelFalloff;
-        public readonly float minAccel;
-    }
-
-    float CalculateAcceleration(float velocity, MovementValues values)
-    {
-        //Desmos for acceleration: https://www.desmos.com/calculator/emgmts7fzm
-        
-        if(velocity <= 0)
-        {
-            return values.maxAccel;
-        }
-        else
-        {
-            return (1 / ((values.accelFalloff * velocity) + (1 / (values.maxAccel - values.minAccel)))) + values.minAccel;
-        }
-    }
-
-    private readonly Dictionary<Surface, MovementValues> surfaceProperties = new Dictionary<Surface, MovementValues>()
-    {
-        {Surface.air, new MovementValues (5, 0.005f, 0.5f)},
-        {Surface.ground, new MovementValues (20, 0.01f, 1)}
-    };
-
     private readonly Dictionary<string, Surface> tagToSurface = new Dictionary<string, Surface>()
     {
         {"Ground", Surface.ground}
     };
 
-    private readonly float jumpForce = 2f;
+    //Movement Physics Constants
+    private readonly Dictionary<Surface, MovementValues> surfaceProperties = new()
+    {
+        //{Surface.air, new MovementValues (5, 0.005f, 0.5f)},
+        //{Surface.ground, new MovementValues (20, 0.01f, 1)}
+        {Surface.air, new MovementValues (10, 0, 10, 10, 0.01f, 2)},
+        {Surface.ground, new MovementValues (25, 0, 25, 25, 0.01f, 5)}
+    };
+
+    //Jumping
+    private readonly float jumpForce = 10f;
+    private bool stillTouchingJumpSurface = false;
+
 
     private Surface highestPrioritySurface = Surface.air;
-
     private Rigidbody2D playerRB;
 
     // Start is called before the first frame update
@@ -74,20 +51,39 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        //Acceleration
         float XInput = ControlsManager.Instance.XInput;
         //Debug.Log(XInput);
+        float accel = 0;
         if (XInput != 0)
         {
-            float accel = CalculateAcceleration(playerRB.velocity.x * XInput, surfaceProperties[highestPrioritySurface]);
+            float inputDirection = Mathf.Sign(XInput);
+                                              //Velocity relative to the direction of input                      
+            accel = CalculateAcceleration(playerRB.velocity.x * inputDirection, surfaceProperties[highestPrioritySurface]);
             playerRB.AddForce(new Vector2(XInput * accel * Time.fixedDeltaTime, 0), ForceMode2D.Impulse);
+            
         }
+
+        //Decleration
+        float playerVelocityDirection = Mathf.Sign(playerRB.velocity.x);
+        float decel = CalculateDeceleration(Mathf.Abs(playerRB.velocity.x), surfaceProperties[highestPrioritySurface]);
+        playerRB.AddForce(new Vector2(playerVelocityDirection * -1 * decel * Time.fixedDeltaTime, 0), ForceMode2D.Impulse);
+
+        Debug.Log("Accel: " + accel + " Decel: " + decel + " Net: " + (accel * Mathf.Sign(XInput) - decel * playerVelocityDirection));
 
         //Debug.Log(ControlsManager.Instance.Jump);
 
-        //Add condition for jumping (& cool down maybe)
-        if (ControlsManager.Instance.Jump && highestPrioritySurface == Surface.ground)
+        //Add condition for jumping
+        if (highestPrioritySurface == Surface.air)
+        {
+            stillTouchingJumpSurface = false;
+        }
+        if (ControlsManager.Instance.Jump && highestPrioritySurface == Surface.ground && !stillTouchingJumpSurface)
         {
             playerRB.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            stillTouchingJumpSurface = true;
+            Debug.Log("Jump");
+            
         }
 
         highestPrioritySurface = Surface.air;
@@ -120,5 +116,69 @@ public class PlayerMovement : MonoBehaviour
                 highestPrioritySurface = surface;
             }
         }
+    }
+
+    private readonly struct MovementValues
+    {
+        public MovementValues(float maxAccel, float accelFalloff, float minAccel, float maxDecel, float decelFalloff, float minDecel)
+        {
+            this.maxAccel = maxAccel;
+            this.accelFalloff = accelFalloff;
+            this.minAccel = minAccel;
+
+            this.maxDecel = maxDecel;
+            this.decelFalloff = decelFalloff;
+            this.minDecel = minDecel;
+        }
+
+        public readonly float maxAccel;
+        public readonly float accelFalloff;
+        public readonly float minAccel;
+
+        public readonly float maxDecel;
+        public readonly float decelFalloff;
+        public readonly float minDecel;
+    }
+
+    float CalculateAcceleration(float velocity, MovementValues values)
+    {
+        //Desmos for acceleration: https://www.desmos.com/calculator/emgmts7fzm
+        float accel;
+        if (velocity <= 0)
+        {
+            accel = values.maxAccel;
+        }
+        else if(values.maxAccel - values.minAccel == 0)
+        {
+            accel = values.maxAccel;
+        }
+        else
+        {
+            accel = (1 / ((values.accelFalloff * velocity) + (1 / (values.maxAccel - values.minAccel)))) + values.minAccel;
+        }
+
+        return accel;
+    }
+
+    float CalculateDeceleration(float velocity, MovementValues values)
+    {
+        //Desmos for Decel: https://www.desmos.com/calculator/yd6t9wniem
+
+        float decel;
+        if (velocity <= 0)
+        {
+            decel = 0;
+        }
+        else if (values.maxDecel - values.minDecel == 0)
+        {
+            decel = values.maxDecel;
+        }
+        else
+        {
+            decel = (-1 / ((values.decelFalloff * velocity) + (1 / (values.maxDecel - values.minDecel)))) + values.maxDecel;
+        }
+
+        return decel;
+
     }
 }
