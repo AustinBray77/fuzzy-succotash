@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,12 +13,14 @@ public class PlayerMovement : MonoBehaviour
     public enum Surface
     {
         air,
-        ground
+        ground,
+        chargedGround
     }
 
     private readonly Dictionary<string, Surface> tagToSurface = new Dictionary<string, Surface>()
     {
-        {"Ground", Surface.ground}
+        {"Ground", Surface.ground},
+        {"Charged Ground", Surface.ground}
     };
 
     //Movement Physics Constants
@@ -25,7 +29,8 @@ public class PlayerMovement : MonoBehaviour
         //{Surface.air, new MovementValues (5, 0.005f, 0.5f)},
         //{Surface.ground, new MovementValues (20, 0.01f, 1)}
         {Surface.air, new MovementValues (10, 0.05f, 7, 7, 0.03f, 1)},
-        {Surface.ground, new MovementValues (40, 0.01f, 28, 30, 0.01f, 3)}
+        {Surface.ground, new MovementValues (40, 0.01f, 28, 30, 0.01f, 3)},
+        {Surface.chargedGround, new MovementValues (40, 0.01f, 28, 30, 0.01f, 3)}
     };
 
     //Jumping
@@ -37,6 +42,8 @@ public class PlayerMovement : MonoBehaviour
     private Surface highestPrioritySurface = Surface.air;
     private Rigidbody2D playerRB;
     private Vector2 totalContactNormals = Vector3.zero;
+
+    private List<Tuple<GameObject, Vector2>> savedChargedForces = new();
 
     // Start is called before the first frame update
     void Start()
@@ -96,12 +103,34 @@ public class PlayerMovement : MonoBehaviour
     void OnCollisionEnter2D(Collision2D col)
     {
         UpdateCollisionInfo(col);
+
+        if(col.gameObject.CompareTag("Charged Ground"))
+        {
+            Vector2 avgNormal = Vector2.right; //CHANGE LATER
+            Vector2 force = avgNormal * -Vector2.Dot(avgNormal, playerRB.velocity);
+
+            savedChargedForces.Add(new Tuple<GameObject, Vector2>(col.gameObject, force));
+        }
     }
 
     void OnCollisionStay2D(Collision2D col)
     {
         UpdateCollisionInfo(col);
     }
+
+    /*
+    private void OnCollisionExit2D(Collision2D col)
+    {
+        if (col.gameObject.CompareTag("Charged Ground"))
+        { 
+            
+            while((index = savedChargedForces.FindIndex()
+            savedChargedForces.Add(new Tuple<GameObject, Vector2>(col.gameObject, force));
+        }
+    }
+    */
+
+
 
     private void UpdateCollisionInfo(Collision2D col)
     {
