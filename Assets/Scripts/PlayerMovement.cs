@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -14,13 +15,13 @@ public class PlayerMovement : MonoBehaviour
     {
         air,
         ground,
-        chargedGround
+        chargedGround,
     }
 
     private readonly Dictionary<string, Surface> tagToSurface = new Dictionary<string, Surface>()
     {
         {"Ground", Surface.ground},
-        {"Charged Ground", Surface.ground}
+        {"Charged Ground", Surface.chargedGround}
     };
 
     //Movement Physics Constants
@@ -28,9 +29,9 @@ public class PlayerMovement : MonoBehaviour
     {
         //{Surface.air, new MovementValues (5, 0.005f, 0.5f)},
         //{Surface.ground, new MovementValues (20, 0.01f, 1)}
-        {Surface.air, new MovementValues (10, 0.05f, 7, 7, 0.03f, 1)},
-        {Surface.ground, new MovementValues (40, 0.01f, 28, 30, 0.01f, 3)},
-        {Surface.chargedGround, new MovementValues (40, 0.01f, 28, 30, 0.01f, 3)}
+        {Surface.air, new MovementValues (10, 0.05f, 7, 7, 0.03f, 1, false)},
+        {Surface.ground, new MovementValues (40, 0.01f, 28, 30, 0.01f, 3, true)},
+        {Surface.chargedGround, new MovementValues (40, 0.01f, 28, 30, 0.01f, 3, true)}
     };
 
     //Jumping
@@ -43,13 +44,14 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D playerRB;
     private Vector2 totalContactNormals = Vector3.zero;
 
-    private List<Tuple<GameObject, Vector2>> savedChargedForces = new();
+    private List<Tuple<Collider2D, Vector2>> savedChargedForces = new();
 
     // Start is called before the first frame update
     void Start()
     {
         playerRB = GetComponent<Rigidbody2D>();
         Time.fixedDeltaTime = (float)1 / 100; //100 fps
+        savedChargedForces.Clear();
     }
 
     void FixedUpdate()
@@ -64,7 +66,6 @@ public class PlayerMovement : MonoBehaviour
                                               //Velocity relative to the direction of input                      
             accel = CalculateAcceleration(playerRB.velocity.x * inputDirection, surfaceProperties[highestPrioritySurface]);
             playerRB.AddForce(new Vector2(XInput * accel * Time.fixedDeltaTime, 0), ForceMode2D.Impulse);
-            
         }
 
         //Decleration
@@ -79,21 +80,33 @@ public class PlayerMovement : MonoBehaviour
             playerRB.AddForce(new Vector2(playerVelocityDirection * -1 * decel * Time.fixedDeltaTime, 0), ForceMode2D.Impulse);
         }
 
-        Debug.Log("Accel: " + accel + " Decel: " + decel + " Net: " + (accel * Mathf.Sign(XInput) - decel * playerVelocityDirection));
+        //Debug.Log("Accel: " + accel + " Decel: " + decel + " Net: " + (accel * Mathf.Sign(XInput) - decel * playerVelocityDirection));
 
         //Debug.Log(ControlsManager.Instance.Jump);
 
-        //Add condition for jumping
+        //Add conditions for jumping
         if (highestPrioritySurface == Surface.air)
         {
             stillTouchingJumpSurface = false;
         }
-        if (ControlsManager.Instance.Jump && highestPrioritySurface == Surface.ground && !stillTouchingJumpSurface)
+        if (ControlsManager.Instance.Jump && surfaceProperties[highestPrioritySurface].canJump && !stillTouchingJumpSurface)
         {
             Vector2 jumpDirection = (totalContactNormals.normalized + jumpBias).normalized;
-            playerRB.AddForce(jumpDirection * jumpForce, ForceMode2D.Impulse);
+            Vector2 force = jumpDirection * jumpForce;
+
+            if(savedChargedForces.Count > 0)
+            {
+                foreach (Tuple<Collider2D, Vector2> item in savedChargedForces)
+                {
+                    force += item.Item2;
+                }
+            }
+
+            savedChargedForces.Clear();
+
+            playerRB.AddForce(force, ForceMode2D.Impulse);
             stillTouchingJumpSurface = true;
-            Debug.Log("Jump");
+            //Debug.Log("Jump");
         }
 
         highestPrioritySurface = Surface.air;
@@ -102,14 +115,32 @@ public class PlayerMovement : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
+        //Debug.Log(col.gameObject.name);
+        //Debug.Log(col.collider.gameObject.name);
+
         UpdateCollisionInfo(col);
 
+        //Saving charges for charged walls
         if(col.gameObject.CompareTag("Charged Ground"))
         {
-            Vector2 avgNormal = Vector2.right; //CHANGE LATER
-            Vector2 force = avgNormal * -Vector2.Dot(avgNormal, playerRB.velocity);
+            Vector2 avgNormal = Vector2.zero;
+            
+            ContactPoint2D[] contacts = new ContactPoint2D[col.contactCount];
+            col.GetContacts(contacts);
+            foreach (ContactPoint2D point in contacts)
+            {
+                avgNormal += point.normal;
+            }
+            avgNormal.Normalize();
 
-            savedChargedForces.Add(new Tuple<GameObject, Vector2>(col.gameObject, force));
+            Debug.Log(avgNormal);
+            Debug.Log(col.relativeVelocity);
+            Debug.Log(Vector2.Dot(avgNormal, col.relativeVelocity));
+
+            Vector2 force = avgNormal * Vector2.Dot(avgNormal, col.relativeVelocity);
+
+            savedChargedForces.Add(new Tuple<Collider2D, Vector2>(col.collider, force));
+            Debug.Log(col.collider + " " + force);
         }
     }
 
@@ -118,19 +149,22 @@ public class PlayerMovement : MonoBehaviour
         UpdateCollisionInfo(col);
     }
 
-    /*
+    
     private void OnCollisionExit2D(Collision2D col)
     {
+        //Debug.Log(col.gameObject.name);
+        //Debug.Log(col.collider.gameObject.name);
+
+        //Remove force charges
         if (col.gameObject.CompareTag("Charged Ground"))
-        { 
-            
-            while((index = savedChargedForces.FindIndex()
-            savedChargedForces.Add(new Tuple<GameObject, Vector2>(col.gameObject, force));
+        {
+            //Checks if the gameobject matches the colliders gameobject
+            bool match(Tuple<Collider2D, Vector2> obj) => (obj.Item1 == col.collider);
+
+            //Removes all forces that are matching with the gameobject to one currently being left
+            savedChargedForces.RemoveAll(match);
         }
     }
-    */
-
-
 
     private void UpdateCollisionInfo(Collision2D col)
     {
@@ -159,7 +193,7 @@ public class PlayerMovement : MonoBehaviour
 
     private readonly struct MovementValues
     {
-        public MovementValues(float maxAccel, float accelFalloff, float minAccel, float maxDecel, float decelFalloff, float minDecel)
+        public MovementValues(float maxAccel, float accelFalloff, float minAccel, float maxDecel, float decelFalloff, float minDecel, bool canJump)
         {
             this.maxAccel = maxAccel;
             this.accelFalloff = accelFalloff;
@@ -168,6 +202,8 @@ public class PlayerMovement : MonoBehaviour
             this.maxDecel = maxDecel;
             this.decelFalloff = decelFalloff;
             this.minDecel = minDecel;
+
+            this.canJump = canJump;
         }
 
         public readonly float maxAccel;
@@ -177,6 +213,8 @@ public class PlayerMovement : MonoBehaviour
         public readonly float maxDecel;
         public readonly float decelFalloff;
         public readonly float minDecel;
+
+        public readonly bool canJump;
     }
 
     float CalculateAcceleration(float velocity, MovementValues values)
