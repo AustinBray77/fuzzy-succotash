@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMovement), typeof(PlayerData))]
@@ -27,5 +28,11 @@ public class Player : Singleton<Player>
         //Gets references
         movement = GetComponent<PlayerMovement>();
         data = GetComponent<PlayerData>();
+    }
+
+    public void SetTransform(Transform newTransform)
+    {
+        //Double check that this is supposed to be world position/rotation and not local
+        transform.SetPositionAndRotation(newTransform.position, newTransform.rotation);
     }
 }

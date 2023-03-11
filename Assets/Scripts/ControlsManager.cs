@@ -7,6 +7,17 @@ using UnityEngine.InputSystem;
 
 public class ControlsManager : Singleton<ControlsManager>
 {
+    public enum InputMap
+    {
+        gameplay,
+        menus
+    }
+
+    private Dictionary<InputMap, string> mapNames = new()
+    {
+        {InputMap.gameplay, "GamePlay" },
+        {InputMap.menus, "Menus" }
+    };
 
     [SerializeField] private InputActionAsset inputActions;
 
@@ -19,9 +30,14 @@ public class ControlsManager : Singleton<ControlsManager>
     // Start is called before the first frame update
     void Start()
     {
-        inputActions.FindActionMap("Gameplay").Enable();
-        xMovementAction = inputActions.FindActionMap("Gameplay").FindAction("X Movement");
-        jumpAction = inputActions.FindActionMap("Gameplay").FindAction("Jump");
+        inputActions.FindActionMap(mapNames[InputMap.gameplay]).Enable();
+        xMovementAction = inputActions.FindActionMap(mapNames[InputMap.gameplay]).FindAction("X Movement");
+        jumpAction = inputActions.FindActionMap(mapNames[InputMap.gameplay]).FindAction("Jump");
+    }
+
+    public void ChangeInputMap(InputMap mapName)
+    {
+        //Add code
     }
 
     // Update is called once per frame
