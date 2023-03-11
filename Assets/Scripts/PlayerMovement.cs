@@ -38,13 +38,21 @@ public class PlayerMovement : MonoBehaviour
     private readonly float jumpForce = 10f; //change to const later? (or maybe the value will be modifiable?)
     private readonly Vector2 jumpBias = new Vector2(0, 0.03f);
     private bool stillTouchingJumpSurface = false;
+    private double jumpTime = 0;
+    private bool heldJump = false;
+    private Vector2 jumpDirection = Vector2.zero;
+    private List<Tuple<Collider2D, Vector2>> savedChargedForces = new();
 
+    //Should these be specific to surfaces?
+    private double minExtraJumpTime = 0.1; //Time after jump when extra jump force starts applying 
+    private double maxExtraJumpTime = 0.5; //Time after jump when extra jump force stops applying
+    private float extraJumpForce = 13f; //per second
 
     private Surface highestPrioritySurface = Surface.air;
     private Rigidbody2D playerRB;
     private Vector2 totalContactNormals = Vector3.zero;
 
-    private List<Tuple<Collider2D, Vector2>> savedChargedForces = new();
+    private Vector2 gravity = new Vector2(0, -14);
 
     // Start is called before the first frame update
     void Start()
@@ -52,11 +60,12 @@ public class PlayerMovement : MonoBehaviour
         playerRB = GetComponent<Rigidbody2D>();
         Time.fixedDeltaTime = (float)1 / 100; //100 fps
         savedChargedForces.Clear();
+        Physics2D.gravity = gravity;
     }
 
     void FixedUpdate()
     {
-        //Acceleration
+    //Acceleration
         float XInput = ControlsManager.Instance.XInput;
         //Debug.Log(XInput);
         float accel = 0;
@@ -68,7 +77,7 @@ public class PlayerMovement : MonoBehaviour
             playerRB.AddForce(new Vector2(XInput * accel * Time.fixedDeltaTime, 0), ForceMode2D.Impulse);
         }
 
-        //Decleration
+    //Decleration
         float playerVelocityDirection = Mathf.Sign(playerRB.velocity.x);
         float decel = CalculateDeceleration(Mathf.Abs(playerRB.velocity.x), surfaceProperties[highestPrioritySurface]);
         if(decel * Time.fixedDeltaTime >= Mathf.Abs(playerRB.velocity.x))
@@ -84,30 +93,57 @@ public class PlayerMovement : MonoBehaviour
 
         //Debug.Log(ControlsManager.Instance.Jump);
 
-        //Add conditions for jumping
+    //Jumping
+        if (!ControlsManager.Instance.Jump)
+        {
+            if(heldJump)
+            {
+                Debug.Log(Time.timeAsDouble - jumpTime);
+            }
+
+            heldJump = false;
+        }
         if (highestPrioritySurface == Surface.air)
         {
             stillTouchingJumpSurface = false;
         }
-        if (ControlsManager.Instance.Jump && surfaceProperties[highestPrioritySurface].canJump && !stillTouchingJumpSurface)
+         
+        if(ControlsManager.Instance.Jump)
         {
-            Vector2 jumpDirection = (totalContactNormals.normalized + jumpBias).normalized;
-            Vector2 force = jumpDirection * jumpForce;
-
-            if(savedChargedForces.Count > 0)
+            //This order of conditions means that if you have held the spacebar since you won't jump again until you release and press it again
+            //This can be changed to auto jump after the max force has been given (by setting heldJump to false after the time is up)
+            //Or it can be completely removed (by changing the else if to and if)
+            if(heldJump)
             {
-                foreach (Tuple<Collider2D, Vector2> item in savedChargedForces)
+                double timeAfterJump = Time.timeAsDouble - jumpTime;
+                if (timeAfterJump >= minExtraJumpTime && timeAfterJump <= maxExtraJumpTime)
                 {
-                    force += item.Item2;
+                    playerRB.AddForce(extraJumpForce * Time.fixedDeltaTime * jumpDirection, ForceMode2D.Impulse);
                 }
             }
+            else if (surfaceProperties[highestPrioritySurface].canJump && !stillTouchingJumpSurface)
+            {
+                jumpDirection = (totalContactNormals.normalized + jumpBias).normalized;
+                Vector2 force = jumpDirection * jumpForce;
 
-            savedChargedForces.Clear();
+                if (savedChargedForces.Count > 0)
+                {
+                    foreach (Tuple<Collider2D, Vector2> item in savedChargedForces)
+                    {
+                        force += item.Item2;
+                    }
+                }
 
-            playerRB.AddForce(force, ForceMode2D.Impulse);
-            stillTouchingJumpSurface = true;
-            //Debug.Log("Jump");
+                savedChargedForces.Clear();
+                playerRB.AddForce(force, ForceMode2D.Impulse);
+                
+                stillTouchingJumpSurface = true;
+                heldJump = true;
+                jumpTime = Time.timeAsDouble;
+                //Debug.Log("Jump");
+            }
         }
+
 
         highestPrioritySurface = Surface.air;
         totalContactNormals = Vector3.zero;
