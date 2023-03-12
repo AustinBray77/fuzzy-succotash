@@ -35,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
     };
 
     //Jumping
-    private readonly float jumpForce = 10f; //change to const later? (or maybe the value will be modifiable?)
+    private readonly float jumpForce = 8f; //change to const later? (or maybe the value will be modifiable?)
     private readonly Vector2 jumpBias = new Vector2(0, 0.03f);
     private bool stillTouchingJumpSurface = false;
     private double jumpTime = 0;
@@ -46,7 +46,7 @@ public class PlayerMovement : MonoBehaviour
     //Should these be specific to surfaces?
     private double minExtraJumpTime = 0.1; //Time after jump when extra jump force starts applying 
     private double maxExtraJumpTime = 0.5; //Time after jump when extra jump force stops applying
-    private float extraJumpForce = 13f; //per second
+    private float extraJumpForce = 14f; //per second
 
     private Surface highestPrioritySurface = Surface.air;
     private Rigidbody2D playerRB;
@@ -117,7 +117,7 @@ public class PlayerMovement : MonoBehaviour
                     playerRB.AddForce(extraJumpForce * Time.fixedDeltaTime * jumpDirection, ForceMode2D.Impulse);
                 }
             }
-            else if (surfaceProperties[highestPrioritySurface].canJump && !stillTouchingJumpSurface)
+            if (surfaceProperties[highestPrioritySurface].canJump && !stillTouchingJumpSurface)
             {
                 jumpDirection = (totalContactNormals.normalized + jumpBias).normalized;
                 Vector2 force = jumpDirection * jumpForce;

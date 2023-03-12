@@ -4,35 +4,45 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent (typeof (Collider2D))]
-public class Bouncer : MonoBehaviour
+public class Bouncer : ToggleableObject
 {
-    private bool enabled = false;
+    private bool activated = true;
     [SerializeField] private float forceAdded;
-    Collider2D collider;
 
-    // Start is called before the first frame update
-    void Start()
+    static Color DisabledColour = Color.gray;
+    static Color BouncerColour = Color.yellow;
+
+    public override void Activate()
     {
-        collider = GetComponent<Collider2D>();
+        activated = true;
+        GetComponent<SpriteRenderer>().color = BouncerColour;
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void Deactivate()
     {
-        
+        activated = false;
+        GetComponent<SpriteRenderer>().color = DisabledColour;
     }
 
     private void OnCollisionEnter2D (Collision2D col)
     {
-        ContactPoint2D[] contacts = new ContactPoint2D[col.contactCount];
-        col.GetContacts(contacts);
-        Vector2 avgNormal = Vector2.zero;
-        foreach (ContactPoint2D point in contacts)
+        if (activated)
         {
-            avgNormal += point.normal;
-        }
-        avgNormal = avgNormal.normalized * -1;
+            ContactPoint2D[] contacts = new ContactPoint2D[col.contactCount];
+            col.GetContacts(contacts);
+            Vector2 avgNormal = Vector2.zero;
+            foreach (ContactPoint2D point in contacts)
+            {
+                avgNormal += point.normal;
+            }
+            avgNormal = avgNormal.normalized * -1;
 
+            float force = Mathf.Abs(Vector2.Dot(avgNormal, col.relativeVelocity)) + forceAdded;
+
+            col.rigidbody.AddForce(force * avgNormal, ForceMode2D.Impulse);
+        }
+
+        /*
         float angle = AngleBetweenVectors(avgNormal, -col.relativeVelocity);
         Debug.Log(avgNormal + " " + -col.relativeVelocity  + " " + angle * Mathf.Rad2Deg);
         
@@ -54,8 +64,12 @@ public class Bouncer : MonoBehaviour
 
         Debug.Log(finalVector);
         col.rigidbody.velocity = finalVector;
+        */
+
+
     }
 
+    /*
     //angle in radians
     private float AngleBetweenVectors(Vector2 a, Vector2 b)
     {
@@ -74,4 +88,5 @@ public class Bouncer : MonoBehaviour
     {
         return new Vector2((Mathf.Cos(angle) * v.x) - (Mathf.Sin(angle) * v.y), (Mathf.Sin(angle) * v.x) + (Mathf.Cos(angle) * v.y));
     }
+    */
 }
