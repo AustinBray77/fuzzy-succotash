@@ -35,9 +35,20 @@ public class ControlsManager : Singleton<ControlsManager>
         jumpAction = inputActions.FindActionMap(mapNames[InputMap.gameplay]).FindAction("Jump");
     }
 
-    public void ChangeInputMap(InputMap mapName)
+    public void SetInputMap(InputMap newMap)
     {
         //Add code
+        foreach (InputMap map in mapNames.Keys)
+        {
+            if (map == newMap)
+            {
+                inputActions.FindActionMap(mapNames[map]).Enable();
+            }
+            else
+            {
+                inputActions.FindActionMap(mapNames[map]).Disable();
+            }
+        }
     }
 
     // Update is called once per frame

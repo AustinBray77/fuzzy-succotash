@@ -6,10 +6,9 @@ public class LevelController : MonoBehaviour
 {
     public bool LevelRunning {get; private set;} = false;
     [SerializeField] Transform playerStartPos;
-    [SerializeField] GameObject levelContainer;
+    //[SerializeField] GameObject levelContainer; //Is this needed?
 
     private LevelData data;
-
 
     private double levelStartTime;
 
@@ -45,9 +44,12 @@ public class LevelController : MonoBehaviour
     private void StartRun()
     {
         //Enable gameplay inputmap
-        //ControlsManager.
+        ControlsManager.Instance.SetInputMap(ControlsManager.InputMap.gameplay);
 
-        //...
+        levelStartTime = Time.timeAsDouble;
+        Time.timeScale = 1;
+
+        //Tell the timer UI to start
 
     }
 
@@ -56,8 +58,12 @@ public class LevelController : MonoBehaviour
 
     }
 
-
-
+    public void PauseLevel()
+    {
+        Time.timeScale = 0;
+        ControlsManager.Instance.SetInputMap(ControlsManager.InputMap.menus);
+        //Open pause menu?
+    }
 
 
     private void OnDestroy()
