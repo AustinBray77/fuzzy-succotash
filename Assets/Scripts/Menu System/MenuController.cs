@@ -29,10 +29,4 @@ public class MenuController : Singleton<MenuController>
             screen.Unload();
         }
     }
-
-    //Method to activate all buttons from a screen
-    public static void InitializeButtonsFromScreen(IScreen screen)
-    {
-        List<Button> buttons = Functions.GetAllComponents<Button>(screen.ScreenElements).ToList();
-    }
 }
