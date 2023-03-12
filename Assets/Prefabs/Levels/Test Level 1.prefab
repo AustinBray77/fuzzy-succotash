@@ -1342,6 +1342,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerStartPos: {fileID: 5223777425211669019}
+  progresser:
+    Stages:
+    - activations: []
+      dectivations: []
+    - activations: []
+      dectivations: []
 --- !u!1 &9175822333509488133
 GameObject:
   m_ObjectHideFlags: 0

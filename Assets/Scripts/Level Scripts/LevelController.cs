@@ -10,6 +10,8 @@ public class LevelController : MonoBehaviour
 
     private LevelData data;
 
+    [SerializeField] private LevelProgresser levelChanges;
+
     private double levelStartTime;
 
     private void Start()
