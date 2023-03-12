@@ -96,10 +96,6 @@ public class PlayerMovement : MonoBehaviour
     //Jumping
         if (!ControlsManager.Instance.Jump)
         {
-            if(heldJump)
-            {
-                Debug.Log(Time.timeAsDouble - jumpTime);
-            }
 
             heldJump = false;
         }
