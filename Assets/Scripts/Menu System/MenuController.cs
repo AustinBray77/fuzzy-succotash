@@ -6,27 +6,42 @@ using UnityEngine.UI;
 
 public class MenuController : Singleton<MenuController>
 {
-    //Array for all menu screens
-    [SerializeField] private IScreen[] _screens;
     private Dictionary<string, IScreen> _screenLib = new Dictionary<string, IScreen>();
+    private string _currentScreenName;
 
     //Method for on start
     private void Start()
     {
         //Loads the screens to the dictionary
-        LoadScreens();
-        _screenLib["Main"].Load();
+        InitializeScreens();
+        OpenScreen("Main");
     }
 
     //Loads all screens from the array into the dictionary
-    private void LoadScreens()
+    private void InitializeScreens()
     {
+        IScreen[] screens = GetComponentsInChildren<IScreen>();
+
         //Loops through each screen and adds it to the dictionary with its name as the key and initializes it
-        foreach (IScreen screen in _screens)
+        foreach (IScreen screen in screens)
         {
             _screenLib.Add(screen.Name, screen);
             screen.Initialize();
             screen.Unload();
         }
+    }
+
+    //Method to load a given screen using the name
+    public void OpenScreen(string screenName)
+    {
+        /*** Add in animation here later ***/
+
+        if (!string.IsNullOrEmpty(_currentScreenName))
+        {
+            _screenLib[_currentScreenName].Unload();
+        }
+
+        _currentScreenName = screenName;
+        _screenLib[screenName].Load();
     }
 }

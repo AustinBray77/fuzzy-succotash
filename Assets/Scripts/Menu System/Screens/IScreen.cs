@@ -3,8 +3,8 @@ using UnityEngine;
 //Interface for menu screens
 public interface IScreen
 {
-    GameObject[] ScreenElements { get; set; }
-    string Name { get; set; }
+    GameObject[] ScreenElements { get; }
+    string Name { get; }
 
     void Initialize();
     void Load();

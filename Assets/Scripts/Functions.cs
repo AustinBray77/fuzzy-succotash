@@ -22,4 +22,12 @@ public class Functions
 
         return output;
     }
+
+    public static void SetActiveAllObjects(GameObject[] gameObjects, bool state)
+    {
+        foreach (GameObject gameObject in gameObjects)
+        {
+            gameObject.SetActive(state);
+        }
+    }
 }

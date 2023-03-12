@@ -2,8 +2,9 @@ using UnityEngine;
 
 public class MainScreen : MonoBehaviour, IScreen
 {
-    public GameObject[] ScreenElements { get; set; }
-    public string Name { get; set; }
+    [SerializeField] private GameObject[] _screenElements;
+    public GameObject[] ScreenElements { get => _screenElements; }
+    public string Name { get => "Main"; }
 
     //Method for initializing the screen
     public void Initialize()
@@ -14,22 +15,29 @@ public class MainScreen : MonoBehaviour, IScreen
     //Method for loading the screen in
     public void Load()
     {
-        //Enables each screen element
-        foreach (GameObject element in ScreenElements)
-        {
-            element.SetActive(true);
-        }
+        Functions.SetActiveAllObjects(ScreenElements, true);
     }
 
     //Method for unloading the screen
     public void Unload()
     {
-        //Disables each screen element
-        foreach (GameObject element in ScreenElements)
-        {
-            element.SetActive(false);
-        }
+        Functions.SetActiveAllObjects(ScreenElements, false);
     }
 
+    #region Button_Methods
+    public void OnClick_Start()
+    {
+        MenuController.Instance.OpenScreen("LevelSelect");
+    }
 
+    public void OnClick_Settings()
+    {
+        MenuController.Instance.OpenScreen("Settings");
+    }
+
+    public void OnClick_Quit()
+    {
+        Application.Quit();
+    }
+    #endregion
 }
