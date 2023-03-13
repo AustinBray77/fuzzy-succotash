@@ -1,32 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 [RequireComponent (typeof (Collider2D))]
-public class Bouncer : ToggleableObject
+public class Bouncer : MonoBehaviour, IToggleableObject
 {
-    private bool activated = true;
+    public bool Activated { get; private set; } = true;
+    private static readonly string activeTag = PlayerMovement.TagFromSurface(PlayerMovement.Surface.bouncer);
+    private static readonly string inActiveTag = PlayerMovement.TagFromSurface(PlayerMovement.Surface.ground);
+
     [SerializeField] private float forceAdded;
 
     static Color DisabledColour = Color.gray;
     static Color BouncerColour = Color.yellow;
 
-    public override void Activate()
+    public void Activate()
     {
-        activated = true;
+        Activated = true;
         GetComponent<SpriteRenderer>().color = BouncerColour;
+        tag = activeTag;
     }
 
-    public override void Deactivate()
+    public void Deactivate()
     {
-        activated = false;
+        Activated = false;
         GetComponent<SpriteRenderer>().color = DisabledColour;
+        tag = inActiveTag;
     }
 
     private void OnCollisionEnter2D (Collision2D col)
     {
-        if (activated)
+        if (Activated)
         {
             ContactPoint2D[] contacts = new ContactPoint2D[col.contactCount];
             col.GetContacts(contacts);

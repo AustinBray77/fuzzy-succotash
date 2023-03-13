@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class ToggleableObject : MonoBehaviour
+public interface IToggleableObject
 {
-    public abstract void Activate();
+    public bool Activated { get; }
 
-    public abstract void Deactivate();
+    void Activate();
+    void Deactivate();
 }
