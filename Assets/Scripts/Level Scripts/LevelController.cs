@@ -16,6 +16,9 @@ public class LevelController : MonoBehaviour
 
     private void Start()
     {
+        //
+        levelChanges.Initialize();
+
         //Check if data for this level exists
 
         //Otherwise 
