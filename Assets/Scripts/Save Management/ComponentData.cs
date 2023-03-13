@@ -7,16 +7,21 @@ public class ComponentData
 {
     private Dictionary<string, object> _savedData = new Dictionary<string, object>();
 
-    public void SetValuePrimitive<T>(string name, T value) where T : struct
+    public void SetValue<T>(string name, T value) where T : struct
         => _savedData.Add(name, value);
 
-    public void SetValue<T>(string name, T value) where T : ISerializable
+    public void SetValueString(string name, string value)
         => _savedData.Add(name, value);
 
-    public T GetValuePrimitive<T>(string name) where T : struct
+    public T GetValue<T>(string name) where T : struct
         => (T)Convert.ChangeType(_savedData[name], typeof(T));
 
-    public T GetValue<T>(string name) where T : ISerializable
-        => (T)Convert.ChangeType(_savedData[name], typeof(T));
+    public string GetValueString(string name)
+        => (string)Convert.ChangeType(_savedData[name], typeof(string));
 
+    public void SetArrayValue<T>(string name, T[] value) where T : struct
+        => _savedData.Add(name, value);
+
+    public T[] GetArrayValue<T>(string name) where T : struct
+        => (T[])Convert.ChangeType(_savedData[name], typeof(T[]));
 }

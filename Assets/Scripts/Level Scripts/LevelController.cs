@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class LevelController : MonoBehaviour
 {
-    public bool LevelRunning {get; private set;} = false;
+    public bool LevelRunning { get; private set; } = false;
     [SerializeField] Transform playerStartPos;
     //[SerializeField] GameObject levelContainer; //Is this needed?
 
     private LevelData data;
 
+    [SerializeField] private int _id;
+    [SerializeField] private int _numberOfStages;
     [SerializeField] private LevelProgresser levelChanges;
 
     private double levelStartTime;
@@ -22,7 +24,8 @@ public class LevelController : MonoBehaviour
         //Check if data for this level exists
 
         //Otherwise 
-        data = new LevelData();
+        data = new LevelData("level_" + _id, _numberOfStages);
+        SaveHandler.Instance.AddSaveableComponent(data);
     }
 
     // Starts the level

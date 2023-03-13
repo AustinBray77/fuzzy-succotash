@@ -9,7 +9,7 @@ public class SaveHandler : Singleton<SaveHandler>
     private readonly string _saveFilePath = Application.persistentDataPath + "/48p.bin";
     private readonly string _test_file_path = "C:/";
 
-    private Dictionary<int, ISaveableComponent> _saveableComponents;
+    private Dictionary<string, ISaveableComponent> _saveableComponents;
 
     //Methods for adding and removing saveable components for when they load in
     public void AddSaveableComponent(ISaveableComponent saveableComponent)
@@ -33,7 +33,7 @@ public class SaveHandler : Singleton<SaveHandler>
         AddSaveableComponent(saveableComponent);
     }
 
-    public ISaveableComponent GetSaveableComponent(int ID)
+    public ISaveableComponent GetSaveableComponent(string ID)
     {
         if (_saveableComponents.ContainsKey(ID))
         {
@@ -46,6 +46,7 @@ public class SaveHandler : Singleton<SaveHandler>
     //Method for saving data
     public void Save()
     {
+
         //Creates the save file if the file doesn't exist
         if (File.Exists(_saveFilePath))
         {
@@ -94,7 +95,7 @@ public class SaveHandler : Singleton<SaveHandler>
         //Reassign each value to its component
         foreach (var currentComponent in components)
         {
-            GetSaveableComponent(currentComponent.GetValuePrimitive<int>("ID")).Deserialize(currentComponent);
+            GetSaveableComponent(currentComponent.GetValueString("ID")).Deserialize(currentComponent);
         }
 
         //Closes the file
