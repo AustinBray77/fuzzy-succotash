@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class LevelHandler : Singleton<LevelHandler>
 {
@@ -13,6 +12,12 @@ public class LevelHandler : Singleton<LevelHandler>
     //Current Level Reference
     public LevelController CurrentLevelController;
 
+    //Adds a callback to the respawn action to respawn the level when pressed
+    private void Start()
+    {
+        ControlsManager.Instance.AddCallBack(ControlsManager.Actions.respawn, (InputAction.CallbackContext context) => Respawn(LevelController.RespawnInfo.manualRespawn));
+    }
+
     //Function to load levels
     public void LoadLevel(int level)
     {
@@ -24,8 +29,8 @@ public class LevelHandler : Singleton<LevelHandler>
     }
 
     //Function to Respawn the Level
-    public void Respawn() =>
-        CurrentLevelController.Respawn();
+    public void Respawn(LevelController.RespawnInfo info) =>
+        CurrentLevelController.Respawn(info);
 
     //Function to load the next level
     public void NextLevel()
