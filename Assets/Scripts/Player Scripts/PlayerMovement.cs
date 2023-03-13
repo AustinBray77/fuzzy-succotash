@@ -16,22 +16,43 @@ public class PlayerMovement : MonoBehaviour
         air,
         ground,
         chargedGround,
+        bouncer
     }
 
-    private readonly Dictionary<string, Surface> tagToSurface = new Dictionary<string, Surface>()
+    public static readonly List<Tuple<string, Surface>> tagToSurface = new List<Tuple<string, Surface>>()
     {
-        {"Ground", Surface.ground},
-        {"Charged Ground", Surface.chargedGround}
+        new Tuple<string, Surface> ("Ground", Surface.ground),
+        new Tuple<string, Surface> ("Charged Ground", Surface.chargedGround),
+        new Tuple<string, Surface> ("Bouncer", Surface.bouncer)
     };
+
+    public static string TagFromSurface(Surface surface)
+    {
+        foreach (Tuple<string, Surface> tuple in tagToSurface){
+            if (tuple.Item2 == surface)
+            { return tuple.Item1; }
+        }
+        return null;
+    }
+
+    public static Surface? SurfaceFromTag(string tag)
+    {
+        foreach (Tuple<string, Surface> tuple in tagToSurface){
+            if (tuple.Item1 == tag)
+            { return tuple.Item2; }
+        }
+        return null;
+    }
 
     //Movement Physics Constants
     private readonly Dictionary<Surface, MovementValues> surfaceProperties = new()
     {
         //{Surface.air, new MovementValues (5, 0.005f, 0.5f)},
         //{Surface.ground, new MovementValues (20, 0.01f, 1)}
-        {Surface.air, new MovementValues (10, 0.05f, 7, 7, 0.03f, 1, false)},
-        {Surface.ground, new MovementValues (40, 0.01f, 28, 30, 0.01f, 3, true)},
-        {Surface.chargedGround, new MovementValues (40, 0.01f, 28, 30, 0.01f, 3, true)}
+        {Surface.air,           new MovementValues (10, 0.05f,  7,  7, 0.03f, 1, false)},
+        {Surface.ground,        new MovementValues (40, 0.01f, 28, 30, 0.01f, 3, true)},
+        {Surface.chargedGround, new MovementValues (40, 0.01f, 28, 30, 0.01f, 3, true)},
+        {Surface.bouncer,       new MovementValues (40, 0.01f, 28, 30, 0.01f, 3, false)}
     };
 
     //Jumping
@@ -80,6 +101,8 @@ public class PlayerMovement : MonoBehaviour
     //Decleration
         float playerVelocityDirection = Mathf.Sign(playerRB.velocity.x);
         float decel = CalculateDeceleration(Mathf.Abs(playerRB.velocity.x), surfaceProperties[highestPrioritySurface]);
+        
+        //if the deceleration is greater than velocity, then add a force which will bring velocity to zero
         if(decel * Time.fixedDeltaTime >= Mathf.Abs(playerRB.velocity.x))
         {
             playerRB.AddForce(new Vector2(-1 * playerRB.velocity.x, 0), ForceMode2D.Impulse);
@@ -94,11 +117,14 @@ public class PlayerMovement : MonoBehaviour
         //Debug.Log(ControlsManager.Instance.Jump);
 
     //Jumping
+
         if (!ControlsManager.Instance.Jump)
         {
-
             heldJump = false;
+            //stillTouchingJumpSurface = false;
         }
+        //StillTouchingJumpSurface is a safety to prevent jumping, but not leaving the ground, meaning that you could jump an infinite number of time
+        //Also I believe you are still touching the ground for one more frame after jumping, so you would jump twice without it
         if (highestPrioritySurface == Surface.air)
         {
             stillTouchingJumpSurface = false;
@@ -109,6 +135,8 @@ public class PlayerMovement : MonoBehaviour
             //This order of conditions means that if you have held the spacebar since you won't jump again until you release and press it again
             //This can be changed to auto jump after the max force has been given (by setting heldJump to false after the time is up)
             //Or it can be completely removed (by changing the else if to and if)
+            
+            //If still holding jump & with time limit then add extra force
             if(heldJump)
             {
                 double timeAfterJump = Time.timeAsDouble - jumpTime;
@@ -117,11 +145,14 @@ public class PlayerMovement : MonoBehaviour
                     playerRB.AddForce(extraJumpForce * Time.fixedDeltaTime * jumpDirection, ForceMode2D.Impulse);
                 }
             }
-            if (surfaceProperties[highestPrioritySurface].canJump && !stillTouchingJumpSurface)
+
+            //If holding jump and able to jump then jump
+            /*else*/ if (surfaceProperties[highestPrioritySurface].canJump && !stillTouchingJumpSurface)
             {
                 jumpDirection = (totalContactNormals.normalized + jumpBias).normalized;
                 Vector2 force = jumpDirection * jumpForce;
 
+                //Add forces from charged walls into jump
                 if (savedChargedForces.Count > 0)
                 {
                     foreach (Tuple<Collider2D, Vector2> item in savedChargedForces)
@@ -165,14 +196,16 @@ public class PlayerMovement : MonoBehaviour
             }
             avgNormal.Normalize();
 
-            Debug.Log(avgNormal);
-            Debug.Log(col.relativeVelocity);
-            Debug.Log(Vector2.Dot(avgNormal, col.relativeVelocity));
+            //Debug.Log(avgNormal);
+            //Debug.Log(col.relativeVelocity);
+            //Debug.Log(Vector2.Dot(avgNormal, col.relativeVelocity));
 
+            //Gets your velocity in the axis of the wall normal
             Vector2 force = avgNormal * Vector2.Dot(avgNormal, col.relativeVelocity);
 
+            //Adds the force to a list of charges, which are released when you jump (or removed when you stop touching the object)
             savedChargedForces.Add(new Tuple<Collider2D, Vector2>(col.collider, force));
-            Debug.Log(col.collider + " " + force);
+            //Debug.Log(col.collider + " " + force);
         }
     }
 
@@ -187,7 +220,7 @@ public class PlayerMovement : MonoBehaviour
         //Debug.Log(col.gameObject.name);
         //Debug.Log(col.collider.gameObject.name);
 
-        //Remove force charges
+        //Removes charged ground saved force charges
         if (col.gameObject.CompareTag("Charged Ground"))
         {
             //Checks if the gameobject matches the colliders gameobject
@@ -202,25 +235,33 @@ public class PlayerMovement : MonoBehaviour
     {
         string tag = col.gameObject.tag;
 
+        //adds the average direction of the contact normal (for finding jumping direction) 
         ContactPoint2D[] contacts = new ContactPoint2D[col.contactCount];
         col.GetContacts(contacts);
         foreach(ContactPoint2D point in contacts)
         {
             totalContactNormals += point.normal;
         }
-        
-        //If the tag of the object is a known surface
-        //Maybe in the future use a script on the object and don't read from the tag?
-        if(tagToSurface.ContainsKey(tag))
-        {
-            Surface surface = tagToSurface[tag];
 
-            //If the surface you are touching is higher priority 
-            if((int)highestPrioritySurface < (int)surface)
-            {
-                highestPrioritySurface = surface;
-            }
+        //If the tag matches a surface type, and that surface is higher in priority than the current highest, then replace the highest priority surface
+        Surface? surface = SurfaceFromTag(tag);
+        
+        if (surface != null && (int)highestPrioritySurface < (int)(Surface)surface)
+        {
+            highestPrioritySurface = (Surface)surface;
         }
+
+        foreach (Tuple<string, Surface> pair in tagToSurface)
+        {
+            
+            if(pair.Item1 == tag)
+            {
+                if ((int)highestPrioritySurface < (int)pair.Item2)
+                {
+                    highestPrioritySurface = pair.Item2;
+                }
+            }
+        }        
     }
 
     private readonly struct MovementValues
@@ -253,10 +294,13 @@ public class PlayerMovement : MonoBehaviour
     {
         //Desmos for acceleration: https://www.desmos.com/calculator/emgmts7fzm
         float accel;
+
         if (velocity <= 0)
         {
             accel = values.maxAccel;
         }
+        //avoids a division by zero
+        //In this case the function is just a straight line, so either max or min can be taken
         else if(values.maxAccel - values.minAccel == 0)
         {
             accel = values.maxAccel;
@@ -278,6 +322,8 @@ public class PlayerMovement : MonoBehaviour
         {
             decel = 0;
         }
+        //avoids a division by zero
+        //In this case the function is just a straight line, so either max or min can be taken
         else if (values.maxDecel - values.minDecel == 0)
         {
             decel = values.maxDecel;
