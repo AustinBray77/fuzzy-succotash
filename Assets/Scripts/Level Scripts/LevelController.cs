@@ -14,10 +14,12 @@ public class LevelController : MonoBehaviour
     [SerializeField] private int _numberOfStages;
     [SerializeField] private LevelProgresser levelChanges;
 
+    int currentStage = 0;
+
     private double levelStartTime;
 
     private void Start()
-    {
+    { 
         //
         levelChanges.Initialize();
 
@@ -29,14 +31,18 @@ public class LevelController : MonoBehaviour
     }
 
     // Starts the level
-    public void StartLevel()
+    public void StartLevel(int stage = 0)
     {
+        levelChanges.LoadStage(stage);
+
         SpawnPlayer();
     }
 
-    // Respawns the level
-    public void Respawn()
+    // Respawns the player
+    public void Respawn(RespawnInfo info)
     {
+        data.LogRespawn(info);
+
         SpawnPlayer();
     }
 
@@ -51,6 +57,8 @@ public class LevelController : MonoBehaviour
 
     private void StartRun()
     {
+        data.LogAttemptStart();
+
         //Enable gameplay inputmap
         ControlsManager.Instance.SetInputMap(ControlsManager.InputMap.gameplay);
 
@@ -73,9 +81,26 @@ public class LevelController : MonoBehaviour
         //Open pause menu?
     }
 
+    public void LevelCompleted()
+    {
+        //Pause level and bring up level completion menu?
+        Time.timeScale = 0;
+        ControlsManager.Instance.SetInputMap(ControlsManager.InputMap.menus);
+
+        double time = Time.timeAsDouble - levelStartTime;
+
+        data.LogLevelCompletion(currentStage, time);
+    }
 
     private void OnDestroy()
     {
 
+    }
+
+    public enum RespawnInfo
+    {
+        playerDied,
+        manualRespawn
+        //levelCompleted
     }
 }

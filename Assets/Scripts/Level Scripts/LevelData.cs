@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,8 +13,8 @@ public class LevelData : ISaveableComponent
         NumberOfStages = numberOfStages;
         Attempts = attempts;
         Deaths = attempts;
-        Completions = completions;
-        BestTimes = bestTimes;
+        Completions = completions ?? (new int[numberOfStages]);
+        BestTimes = bestTimes ?? (new double[numberOfStages]);
     }
 
     public string ID { get; private set; }
@@ -23,6 +24,31 @@ public class LevelData : ISaveableComponent
     public double[] BestTimes { get; private set; }
     public int NumberOfStages { get; private set; }
     public Image Thumbnail { get; private set; }
+
+    public void LogLevelCompletion(int stage, double time)
+    {
+        Completions[stage]++;
+        
+        if (BestTimes[stage] > time || Completions[stage] == 1)
+        {
+            BestTimes[stage] = time;
+        }
+    }
+
+    public void LogRespawn(LevelController.RespawnInfo info)
+    {
+        switch (info)
+        {
+            case LevelController.RespawnInfo.playerDied:
+                Deaths++;
+                break;
+        }
+    }
+
+    public void LogAttemptStart()
+    {
+        Attempts++;
+    }
 
     public ComponentData Serialize()
     {
