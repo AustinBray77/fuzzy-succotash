@@ -16,14 +16,16 @@ public class PlayerMovement : MonoBehaviour
         air,
         ground,
         chargedGround,
-        bouncer
+        bouncer,
+        blower
     }
 
     public static readonly List<Tuple<string, Surface>> tagToSurface = new List<Tuple<string, Surface>>()
     {
         new Tuple<string, Surface> ("Ground", Surface.ground),
         new Tuple<string, Surface> ("Charged Ground", Surface.chargedGround),
-        new Tuple<string, Surface> ("Bouncer", Surface.bouncer)
+        new Tuple<string, Surface> ("Bouncer", Surface.bouncer),
+        new Tuple<string, Surface> ("Blower", Surface.blower)
     };
 
     public static string TagFromSurface(Surface surface)
@@ -52,7 +54,8 @@ public class PlayerMovement : MonoBehaviour
         {Surface.air,           new MovementValues (10, 0.05f,  7,  7, 0.03f, 1, false)},
         {Surface.ground,        new MovementValues (40, 0.01f, 28, 30, 0.01f, 3, true)},
         {Surface.chargedGround, new MovementValues (40, 0.01f, 28, 30, 0.01f, 3, true)},
-        {Surface.bouncer,       new MovementValues (40, 0.01f, 28, 30, 0.01f, 3, false)}
+        {Surface.bouncer,       new MovementValues (10, 0.05f,  7,  7, 0.03f, 1, false)},
+        {Surface.blower,        new MovementValues (10, 0.05f,  7,  7, 0.03f, 1, false)}
     };
 
     //Jumping
