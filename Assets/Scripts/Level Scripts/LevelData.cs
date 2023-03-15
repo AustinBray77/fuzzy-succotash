@@ -24,11 +24,12 @@ public class LevelData : ISaveableComponent
     public double[] BestTimes { get; private set; }
     public int NumberOfStages { get; private set; }
     public Image Thumbnail { get; private set; }
+    public string Title { get; private set; }
 
     public void LogLevelCompletion(int stage, double time)
     {
         Completions[stage]++;
-        
+
         if (BestTimes[stage] > time || Completions[stage] == 1)
         {
             BestTimes[stage] = time;

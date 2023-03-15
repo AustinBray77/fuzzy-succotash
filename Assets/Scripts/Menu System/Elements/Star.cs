@@ -4,6 +4,9 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Button))]
 public class Star : MonoBehaviour
 {
+    public const float STAR_SIZE = 25;
+
+
     [SerializeField] private Image _complete;
     [SerializeField] private Image _incomplete;
     [SerializeField] private Image _locked;

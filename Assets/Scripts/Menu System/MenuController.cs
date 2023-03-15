@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,15 @@ public class MenuController : Singleton<MenuController>
 {
     private Dictionary<string, IScreen> _screenLib = new Dictionary<string, IScreen>();
     private string _currentScreenName;
+
+    [Serializable]
+    public class UIPrefabs
+    {
+        public GameObject LevelCard;
+        public GameObject Star;
+    }
+
+    public UIPrefabs Prefabs;
 
     //Method for on start
     private void Start()
