@@ -11,6 +11,9 @@ public class LevelCard : MonoBehaviour
     [SerializeField] private Image _levelImage;
     private Star[] _stars;
 
+    public const float CARD_HEIGHT = 300;
+    public const float CARD_WIDTH = 100;
+
     public void GenerateFromLevel(LevelData level)
     {
         _mainButton = GetComponent<Button>();
