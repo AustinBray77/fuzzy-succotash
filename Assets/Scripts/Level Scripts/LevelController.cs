@@ -7,26 +7,27 @@ public class LevelController : MonoBehaviour
     public bool LevelRunning { get; private set; } = false;
     [SerializeField] Transform playerStartPos;
 
-    private LevelData data;
+    private LevelData _data;
+    public LevelData Data { get => _data; }
 
     [SerializeField] private int _id;
     [SerializeField] private int _numberOfStages;
+    [SerializeField] private string _title;
     [SerializeField] private LevelProgresser levelChanges;
 
     int currentStage = 0;
 
     private double levelStartTime;
 
-    private void Start()
-    { 
+    //Called when the game loads, called once per run
+    public void Initialize(int index)
+    {
         //Set up the level Progressor so that it can easily move through stages later on
         levelChanges.Initialize();
 
-        //Check if data for this level exists
-
-        //Otherwise 
-        data = new LevelData("level_" + _id, _numberOfStages);
-        SaveHandler.Instance.AddSaveableComponent(data);
+        //Reinitialize the data
+        _data = new LevelData("level_" + _id, _numberOfStages, _title, index);
+        SaveHandler.Instance.AddSaveableComponent(_data);
     }
 
     // Starts the level
@@ -40,7 +41,7 @@ public class LevelController : MonoBehaviour
     // Respawns the player
     public void Respawn(RespawnInfo info)
     {
-        data.LogRespawn(info);
+        _data.LogRespawn(info);
 
         SpawnPlayer();
     }
@@ -56,7 +57,7 @@ public class LevelController : MonoBehaviour
 
     private void StartRun()
     {
-        data.LogAttemptStart();
+        _data.LogAttemptStart();
 
         //Enable gameplay inputmap
         ControlsManager.Instance.SetInputMap(ControlsManager.InputMap.gameplay);
@@ -88,7 +89,7 @@ public class LevelController : MonoBehaviour
 
         double time = Time.timeAsDouble - levelStartTime;
 
-        data.LogLevelCompletion(currentStage, time);
+        _data.LogLevelCompletion(currentStage, time);
     }
 
     private void OnDestroy()

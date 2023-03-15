@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Button), typeof(RectTransform))]
 public class LevelCard : MonoBehaviour
@@ -18,6 +19,14 @@ public class LevelCard : MonoBehaviour
     {
         _mainButton = GetComponent<Button>();
         _rectTransform = GetComponent<RectTransform>();
+
+        UnityAction onButtonClick = () =>
+        {
+            MenuController.Instance.OpenScreen("Game");
+            LevelHandler.Instance.LoadLevel(level.Index);
+        };
+
+        _mainButton.onClick.AddListener(onButtonClick);
 
         _title.text = level.Title;
         _levelImage = level.Thumbnail;

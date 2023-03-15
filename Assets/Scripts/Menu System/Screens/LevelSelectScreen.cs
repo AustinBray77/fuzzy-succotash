@@ -39,8 +39,7 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
                 int OneDimensionalIndex = i * CardsPerRow + j;
                 LevelCard currentCard = Instantiate(MenuController.Instance.Prefabs.LevelCard, transform).GetComponent<LevelCard>();
 
-                //*** FOR THE FUTURE WHEN A LEVEL CONTROLLER TO LEVEL DATA FUNCTION IS CREATED ***//
-                //currentCard.GenerateFromLevel(LevelHandler.Instance.LevelReferences[OneDimensionalIndex].GetData());
+                currentCard.GenerateFromLevel(LevelHandler.Instance.LevelReferences[OneDimensionalIndex].Data);
 
                 RectTransform cardTransform = currentCard.GetComponent<RectTransform>();
 

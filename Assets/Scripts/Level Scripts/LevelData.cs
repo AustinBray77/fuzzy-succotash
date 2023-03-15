@@ -7,10 +7,12 @@ using UnityEngine.UI;
 
 public class LevelData : ISaveableComponent
 {
-    public LevelData(string id, int numberOfStages, int attempts = 0, int deaths = 0, int[] completions = null, double[] bestTimes = null)
+    public LevelData(string id, int numberOfStages, string title, int index, int attempts = 0, int deaths = 0, int[] completions = null, double[] bestTimes = null)
     {
         ID = id;
         NumberOfStages = numberOfStages;
+        Title = title;
+        Index = index;
         Attempts = attempts;
         Deaths = attempts;
         Completions = completions ?? (new int[numberOfStages]);
@@ -25,6 +27,7 @@ public class LevelData : ISaveableComponent
     public int NumberOfStages { get; private set; }
     public Image Thumbnail { get; private set; }
     public string Title { get; private set; }
+    public int Index { get; private set; }
 
     public void LogLevelCompletion(int stage, double time)
     {

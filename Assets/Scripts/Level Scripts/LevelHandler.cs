@@ -49,7 +49,7 @@ public class LevelHandler : Singleton<LevelHandler>
     //Function to Save the Level Data
     public void SaveLevelData()
     {
-        /*** FUTURE CODING ***/
+        SaveHandler.Instance.Save();
     }
 
     //Function for when the user closes the application 
