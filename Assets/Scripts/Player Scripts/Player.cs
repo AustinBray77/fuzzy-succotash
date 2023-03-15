@@ -6,6 +6,8 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerMovement), typeof(PlayerData))]
 public class Player : Singleton<Player>
 {
+    public static string PlayerTag = "Player";
+
     //Movement Controller
     private PlayerMovement movement;
 
@@ -28,6 +30,7 @@ public class Player : Singleton<Player>
         //Gets references
         movement = GetComponent<PlayerMovement>();
         data = GetComponent<PlayerData>();
+        tag = PlayerTag;
     }
 
     public void SetTransform(Transform newTransform)

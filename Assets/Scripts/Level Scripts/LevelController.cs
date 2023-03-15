@@ -6,7 +6,6 @@ public class LevelController : MonoBehaviour
 {
     public bool LevelRunning { get; private set; } = false;
     [SerializeField] Transform playerStartPos;
-    //[SerializeField] GameObject levelContainer; //Is this needed?
 
     private LevelData data;
 
@@ -20,7 +19,7 @@ public class LevelController : MonoBehaviour
 
     private void Start()
     { 
-        //
+        //Set up the level Progressor so that it can easily move through stages later on
         levelChanges.Initialize();
 
         //Check if data for this level exists
