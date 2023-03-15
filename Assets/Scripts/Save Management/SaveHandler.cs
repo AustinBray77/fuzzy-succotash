@@ -43,6 +43,11 @@ public class SaveHandler : Singleton<SaveHandler>
         throw new Exception("Invalid Save Component ID");
     }
 
+    public bool SaveableComponentExists(string ID)
+    {
+        return _saveableComponents.ContainsKey(ID);
+    }
+
     //Method for saving data
     public void Save()
     {
