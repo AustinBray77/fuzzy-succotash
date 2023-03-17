@@ -6,7 +6,6 @@ public class Blower : MonoBehaviour, IToggleableObject
 {
     [SerializeField] private float maxForce;
     [SerializeField] private float minForce;
-    [SerializeField] private Collider2D pushingArea;
     [SerializeField] private float maxDistance;
     [SerializeField] private float angleOnUnitCircle;
 

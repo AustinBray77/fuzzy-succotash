@@ -14,8 +14,10 @@ public class LevelProgresser
     [Serializable]
     private struct Stage
     {
-        [SerializeField] public MonoBehaviour[] activations;
-        [SerializeField] public MonoBehaviour[] deactivations;
+        [SerializeField][RequireInterface(typeof(IToggleableObject))] private MonoBehaviour[] _activations;
+        [SerializeField][RequireInterface(typeof(IToggleableObject))] private MonoBehaviour[] _deactivations;
+        public IToggleableObject[] Activations { get => _activations as IToggleableObject[]; }
+        public IToggleableObject[] Deactivations { get => _deactivations as IToggleableObject[]; }
     }
 
     [SerializeField] private Stage[] stages;
@@ -40,8 +42,8 @@ public class LevelProgresser
         //This way any stage can be loaded directly, without extra steps
         if (stages.Length > 0)
         {
-            activations = (IToggleableObject[]) stages[0].activations;
-            deactivations = (IToggleableObject[]) stages[0].deactivations;
+            activations = stages[0].Activations;
+            deactivations = stages[0].Deactivations;
             
             if (activations.Length > 0)
             {
@@ -55,8 +57,8 @@ public class LevelProgresser
 
         for (int i = 1; i < numberOfStages && i < stages.Length; i++)
         {
-            activations = (IToggleableObject[]) stages[i].activations;
-            deactivations = (IToggleableObject[]) stages[i].deactivations;
+            activations = (IToggleableObject[]) stages[i].Activations;
+            deactivations = (IToggleableObject[]) stages[i].Deactivations;
 
             activeObjects[i].AddRange(activeObjects[i-1]);
             inactiveObjects[i].AddRange(inactiveObjects[i-1]);
@@ -64,12 +66,12 @@ public class LevelProgresser
             inactiveObjects[i].AddRange(deactivations);
             activeObjects[i].AddRange(activations);
 
-            foreach (IToggleableObject obj in stages[i].deactivations)
+            foreach (IToggleableObject obj in stages[i].Deactivations)
             {
                 activeObjects[i].Remove(obj);
             }
 
-            foreach (IToggleableObject obj in stages[i].activations)
+            foreach (IToggleableObject obj in stages[i].Activations)
             {
                 inactiveObjects[i].Remove(obj);
             }
