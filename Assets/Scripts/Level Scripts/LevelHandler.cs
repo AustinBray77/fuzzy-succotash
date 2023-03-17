@@ -1,5 +1,7 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
 
 public class LevelHandler : Singleton<LevelHandler>
 {
@@ -7,13 +9,13 @@ public class LevelHandler : Singleton<LevelHandler>
     public LevelController[] LevelReferences;
 
     //Current level
-    public int CurrentLevelIndex;
+    public int CurrentLevelIndex { get; private set; }
 
     //Current Level Reference
-    public LevelController CurrentLevelController;
+    public LevelController CurrentLevelController { get; private set; }
 
     //Adds a callback to the respawn action to respawn the level when pressed
-    private void Start()
+    public void Initialize()
     {
         ControlsManager.Instance.AddCallBack(ControlsManager.Actions.respawn, (InputAction.CallbackContext context) => Respawn(LevelController.RespawnInfo.manualRespawn));
     }

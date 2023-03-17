@@ -43,7 +43,7 @@ public class ControlsManager : Singleton<ControlsManager>
         respawn
     }
 
-    private Dictionary<Actions, InputAction> enumToAction = new()
+    private readonly Dictionary<Actions, InputAction> enumToAction = new()
     {
         { Actions.xMovement, xMovementAction },
         { Actions.jump, jumpAction },
@@ -53,11 +53,10 @@ public class ControlsManager : Singleton<ControlsManager>
     public float XInput { get => xMovementAction.ReadValue<float>(); }
     public bool Jump { get => jumpAction.IsPressed(); }
 
-    // Start is called before the first frame update
-    protected override void Awake()
+    public void Initialize()
     {
-        base.Awake();
         inputActions.FindActionMap(mapNames[InputMap.gameplay]).Enable();
+
         xMovementAction = inputActions.FindActionMap(mapNames[InputMap.gameplay]).FindAction("X Movement");
         jumpAction = inputActions.FindActionMap(mapNames[InputMap.gameplay]).FindAction("Jump");
         respawnAction = inputActions.FindActionMap(mapNames[InputMap.gameplay]).FindAction("Respawn");
@@ -65,6 +64,12 @@ public class ControlsManager : Singleton<ControlsManager>
 
     public void AddCallBack(Actions action, Action<InputAction.CallbackContext> callback)
     {
+        Debug.Log("0: " + (respawnAction is null));
+        Debug.Log("1: " + (enumToAction[Actions.respawn] is null));
+        Debug.Log("2: " + enumToAction[Actions.respawn].name);
+        Debug.Log("3: " + action + " " + callback.Method.Name);
+        Debug.Log("4: " + enumToAction[action]);
+        Debug.Log("5: " + enumToAction[action].name);
         enumToAction[action].performed += callback;
     }
 

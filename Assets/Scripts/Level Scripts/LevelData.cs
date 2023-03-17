@@ -7,21 +7,21 @@ using UnityEngine.UI;
 
 public class LevelData : ISaveableComponent
 {
-    public LevelData(string id, int numberOfStages, string title, int index, int attempts = 0, int deaths = 0, int[] completions = null, double[] bestTimes = null)
+    public LevelData(string id, int numberOfStages, string title, int index, int[] attempts = null, int[] deaths = null, int[] completions = null, double[] bestTimes = null)
     {
         ID = id;
         NumberOfStages = numberOfStages;
         Title = title;
         Index = index;
-        Attempts = attempts;
-        Deaths = attempts;
+        Attempts = attempts ?? (new int[numberOfStages]);
+        Deaths = deaths ?? (new int[numberOfStages]);
         Completions = completions ?? (new int[numberOfStages]);
         BestTimes = bestTimes ?? (new double[numberOfStages]);
     }
 
     public string ID { get; private set; }
-    public int Attempts { get; private set; }
-    public int Deaths { get; private set; }
+    public int[] Attempts { get; private set; }
+    public int[] Deaths { get; private set; }
     public int[] Completions { get; private set; }
     public double[] BestTimes { get; private set; }
     public int NumberOfStages { get; private set; }
@@ -39,19 +39,19 @@ public class LevelData : ISaveableComponent
         }
     }
 
-    public void LogRespawn(LevelController.RespawnInfo info)
+    public void LogRespawn(int stage, LevelController.RespawnInfo info)
     {
         switch (info)
         {
             case LevelController.RespawnInfo.playerDied:
-                Deaths++;
+                Deaths[stage]++;
                 break;
         }
     }
 
-    public void LogAttemptStart()
+    public void LogAttemptStart(int stage)
     {
-        Attempts++;
+        Attempts[stage]++;
     }
 
     public ComponentData Serialize()
@@ -59,8 +59,8 @@ public class LevelData : ISaveableComponent
         ComponentData data = new ComponentData();
 
         data.SetValueString("ID", ID);
-        data.SetValue<int>("Attempts", Attempts);
-        data.SetValue<int>("Deaths", Deaths);
+        data.SetArrayValue<int>("Attempts", Attempts);
+        data.SetArrayValue<int>("Deaths", Deaths);
         data.SetArrayValue<int>("Completions", Completions);
         data.SetArrayValue<double>("BestTimes", BestTimes);
 
@@ -70,8 +70,8 @@ public class LevelData : ISaveableComponent
     public void Deserialize(ComponentData data)
     {
         ID = data.GetValueString("ID");
-        Attempts = data.GetValue<int>("Attemps");
-        Deaths = data.GetValue<int>("Deaths");
+        Attempts = data.GetArrayValue<int>("Attemps");
+        Deaths = data.GetArrayValue<int>("Deaths");
         Completions = data.GetArrayValue<int>("Completions");
         BestTimes = data.GetArrayValue<double>("BestTime");
     }
