@@ -41,23 +41,26 @@ public class LevelController : MonoBehaviour
     // Respawns the player
     public void Respawn(RespawnInfo info)
     {
-        _data.LogRespawn(info);
+        _data.LogRespawn(currentStage, info);
 
         SpawnPlayer();
     }
 
     private void SpawnPlayer()
     {
-        ResetLevel();
+        //Fade out
 
+        ResetLevel();
         Player.Instance.SetTransform(playerStartPos);
+
+        //Fade in
 
         StartRun();
     }
 
     private void StartRun()
     {
-        _data.LogAttemptStart();
+        _data.LogAttemptStart(currentStage);
 
         //Enable gameplay inputmap
         ControlsManager.Instance.SetInputMap(ControlsManager.InputMap.gameplay);
