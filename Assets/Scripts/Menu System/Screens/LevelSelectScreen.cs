@@ -2,23 +2,49 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class LevelSelectScreen : MonoBehaviour, IScreen
 {
-    [SerializeField] private GameObject[] _screenElements;
-    private LevelCard[] _levelCards;
+    private class Page
+    {
+        public Page(LevelCard[] cards, GameObject _object)
+        {
+            Cards = cards;
+            Object = _object;
+        }
+
+        public GameObject Object { get; private set; }
+        public LevelCard[] Cards { get; private set; }
+    }
+
+    [SerializeField] private List<GameObject> _screenElements;
+    private Page[] _pages;
     private int _currentLevelPage;
-    public GameObject[] ScreenElements { get => _screenElements; }
+    public GameObject[] ScreenElements { get => _screenElements.ToArray(); }
     public string Name { get => "LevelSelect"; }
+    private const float s_cardMargin = 12.5f;
+
+    [SerializeField] private Button _nextPageButton;
+    [SerializeField] private Button _previousPageButton;
 
     public void Initialize()
     {
-        GenerateLevelCards();
+        GeneratePages();
+
+        _nextPageButton.onClick.AddListener(NextPage);
+        _previousPageButton.onClick.AddListener(PreviousPage);
+
+        _screenElements.Add(_nextPageButton.gameObject);
+        _screenElements.Add(_previousPageButton.gameObject);
     }
 
     public void Load()
     {
-        Functions.SetActiveAllObjects(ScreenElements, true);
+        _pages[0].Object.SetActive(true);
+        _currentLevelPage = 0;
+        _previousPageButton.gameObject.SetActive(false);
     }
 
     public void Unload()
@@ -26,46 +52,78 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
         Functions.SetActiveAllObjects(ScreenElements, false);
     }
 
-    public void GenerateLevelCards()
+    public void GeneratePages()
     {
-        float CardMargin = 12.5f;
-        int Rows = (int)(Screen.height / (LevelCard.CARD_HEIGHT + 2 * CardMargin));
-        int CardsPerRow = (int)(Screen.width / (LevelCard.CARD_WIDTH + 2 * CardMargin));
+        int rows = (int)(Screen.height / (LevelCard.CARD_HEIGHT + 2 * s_cardMargin));
+        int cardsPerRow = (int)(Screen.width / (LevelCard.CARD_WIDTH + 2 * s_cardMargin));
 
-        _levelCards = new LevelCard[Rows * CardsPerRow];
+        int cardsPerPage = (rows * cardsPerRow);
+        int numberofPages = Mathf.CeilToInt(LevelHandler.Instance.LevelReferences.Length / cardsPerPage);
+        _pages = new Page[numberofPages];
 
-        GameObject[] newScreenElements = new GameObject[_screenElements.Length + _levelCards.Length];
-        Array.Copy(_screenElements, newScreenElements, _screenElements.Length);
+        for (int i = 0; i < numberofPages; i++)
+        {
+            int startIndex = i * cardsPerPage;
+            int endIndex = Mathf.Min((i + 1) * cardsPerPage - 1, LevelHandler.Instance.LevelReferences.Length - 1);
+            GameObject pageObject = new GameObject("Page " + i);
+            LevelCard[] levelCards = GenerateLevelCards(pageObject.transform, startIndex, endIndex, rows, cardsPerRow);
+            _pages[i] = new Page(levelCards, pageObject);
+            _pages[i].Object.transform.parent = transform;
+            _screenElements.Add(_pages[i].Object);
+        }
+    }
 
-        for (int i = 0; i < Rows; i++)
-            for (int j = 0; j < CardsPerRow; j++)
+    public LevelCard[] GenerateLevelCards(Transform page, int start, int end, int rows, int cardsPerRow)
+    {
+        LevelCard[] levelCards = new LevelCard[rows * cardsPerRow];
+
+        int row = 0, column = 0;
+
+        for (int i = start; i < end; i++, column++)
+        {
+            if (column >= cardsPerRow)
             {
-                int OneDimensionalIndex = i * CardsPerRow + j;
-
-                if (OneDimensionalIndex >= LevelHandler.Instance.LevelReferences.Length)
-                    break;
-
-                LevelCard currentCard = Instantiate(MenuController.Instance.Prefabs.LevelCard, transform).GetComponent<LevelCard>();
-
-                currentCard.GenerateFromLevel(LevelHandler.Instance.LevelReferences[OneDimensionalIndex].Data);
-
-                RectTransform cardTransform = currentCard.GetComponent<RectTransform>();
-
-                //Sets anchor to the top left
-                cardTransform.anchorMin = new Vector2(0, 1);
-                cardTransform.anchorMax = new Vector2(0, 1);
-                cardTransform.pivot = new Vector2(0, 0);
-
-                float xPos = j * (LevelCard.CARD_WIDTH + 2 * CardMargin) + CardMargin;
-                float yPos = -((i + 1) * (LevelCard.CARD_HEIGHT + 2 * CardMargin) + CardMargin);
-
-                cardTransform.anchoredPosition = new Vector2(xPos, yPos);
-
-                _levelCards[OneDimensionalIndex] = currentCard;
-                newScreenElements[_screenElements.Length + OneDimensionalIndex] = currentCard.gameObject;
+                column = 0;
+                row++;
             }
 
-        _screenElements = newScreenElements;
+            LevelCard currentCard = Instantiate(MenuController.Instance.Prefabs.LevelCard, page).GetComponent<LevelCard>();
 
+            currentCard.GenerateFromLevel(LevelHandler.Instance.LevelReferences[i].Data);
+
+            RectTransform cardTransform = currentCard.GetComponent<RectTransform>();
+
+            //Sets anchor to the top left
+            cardTransform.anchorMin = new Vector2(0, 1);
+            cardTransform.anchorMax = new Vector2(0, 1);
+            cardTransform.pivot = new Vector2(0, 0);
+
+            float xPos = column * (LevelCard.CARD_WIDTH + 2 * s_cardMargin) + s_cardMargin;
+            float yPos = -((row + 1) * (LevelCard.CARD_HEIGHT + 2 * s_cardMargin) + s_cardMargin);
+
+            cardTransform.anchoredPosition = new Vector2(xPos, yPos);
+
+            levelCards[i] = currentCard;
+        }
+
+        return levelCards;
+    }
+
+    public void NextPage()
+    {
+        _pages[_currentLevelPage].Object.SetActive(false);
+        _currentLevelPage++;
+        _pages[_currentLevelPage].Object.SetActive(true);
+
+        _nextPageButton.gameObject.SetActive(_currentLevelPage < _pages.Length);
+    }
+
+    public void PreviousPage()
+    {
+        _pages[_currentLevelPage].Object.SetActive(false);
+        _currentLevelPage--;
+        _pages[_currentLevelPage].Object.SetActive(true);
+
+        _previousPageButton.gameObject.SetActive(_currentLevelPage > 0);
     }
 }
