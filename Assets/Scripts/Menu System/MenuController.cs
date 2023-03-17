@@ -32,6 +32,9 @@ public class MenuController : Singleton<MenuController>
     {
         IScreen[] screens = GetComponentsInChildren<IScreen>();
 
+        Debug.Log(screens.Length);
+
+
         //Loops through each screen and adds it to the dictionary with its name as the key and initializes it
         foreach (IScreen screen in screens)
         {

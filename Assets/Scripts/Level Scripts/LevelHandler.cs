@@ -19,13 +19,13 @@ public class LevelHandler : Singleton<LevelHandler>
     }
 
     //Function to load levels
-    public void LoadLevel(int level)
+    public void LoadLevel(int level, int stage)
     {
         //Spawns in the level and saves it
         CurrentLevelController = Instantiate(LevelReferences[level].gameObject, Vector3.zero, Quaternion.identity).GetComponent<LevelController>();
 
         //Starts the level
-        CurrentLevelController.StartLevel();
+        CurrentLevelController.StartLevel(stage);
     }
 
     //Function to Respawn the Level
@@ -36,7 +36,7 @@ public class LevelHandler : Singleton<LevelHandler>
     public void NextLevel()
     {
         UnloadLevel();
-        LoadLevel(++CurrentLevelIndex);
+        LoadLevel(++CurrentLevelIndex, 0);
     }
 
     //Function to Unload a Level

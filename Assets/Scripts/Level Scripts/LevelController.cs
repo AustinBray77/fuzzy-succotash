@@ -31,7 +31,7 @@ public class LevelController : MonoBehaviour
     }
 
     // Starts the level
-    public void StartLevel(int stage = 0)
+    public void StartLevel(int stage)
     {
         levelChanges.LoadStage(stage);
 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
@@ -13,9 +14,17 @@ public class Star : MonoBehaviour
 
     private Button _mainButton;
 
-    private void Awake()
+    public void Initialize(int level, int stage)
     {
         _mainButton = GetComponent<Button>();
+
+        UnityAction onClick = () =>
+        {
+            MenuController.Instance.OpenScreen("Game");
+            LevelHandler.Instance.LoadLevel(level, stage);
+        };
+
+        _mainButton.onClick.AddListener(onClick);
     }
 
     public void SetStarState(int state)
