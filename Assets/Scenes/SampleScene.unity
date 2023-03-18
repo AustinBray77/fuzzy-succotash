@@ -411,15 +411,14 @@ MonoBehaviour:
     stages:
     - _activations: []
       _deactivations: []
-      test: {fileID: 0}
     - _activations: []
-      _deactivations:
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      - {fileID: 0}
-      test: {fileID: 0}
-    numberOfStages: 2
+      _deactivations: []
+    - _activations: []
+      _deactivations: []
+    - _activations: []
+      _deactivations: []
+    - _activations: []
+      _deactivations: []
 --- !u!1 &235089226
 GameObject:
   m_ObjectHideFlags: 0

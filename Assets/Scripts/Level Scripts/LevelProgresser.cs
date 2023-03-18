@@ -12,7 +12,7 @@ public class LevelProgresser
     //https://forum.unity.com/threads/serialized-interface-fields.1238785/
 
     [Serializable]
-    private struct Stage
+    public struct Stage
     {
         [SerializeField][RequireInterface(typeof(IToggleableObject))] private MonoBehaviour[] _activations;
         [SerializeField][RequireInterface(typeof(IToggleableObject))] private MonoBehaviour[] _deactivations;
@@ -22,7 +22,7 @@ public class LevelProgresser
 
     [SerializeField] private Stage[] stages;
 
-    [SerializeField] private int numberOfStages;
+    private int numberOfStages;
     
     public int NumberOfStages { get => numberOfStages; }
 
@@ -31,40 +31,32 @@ public class LevelProgresser
 
     public void Initialize()
     {
-
+        numberOfStages = stages.Length;
         activeObjects = new List<IToggleableObject>[numberOfStages];
         inactiveObjects = new List<IToggleableObject>[numberOfStages];
 
-        IToggleableObject[] activations;
-        IToggleableObject[] deactivations; 
-
         //Creates an array of lists of which objects should be active at each stage (not just which ones change between stages)
         //This way any stage can be loaded directly, without extra steps
-        if (stages.Length > 0)
+        if (stages is not null && stages.Length > 0)
         {
-            activations = stages[0].Activations;
-            deactivations = stages[0].Deactivations;
             
-            if (activations.Length > 0)
+            if ((stages[0].Activations is not null) && stages[0].Activations.Length > 0)
             {
-                activeObjects[0].AddRange(activations);
+                activeObjects[0].AddRange(stages[0].Activations);
             }
-            if (deactivations.Length > 0)
+            if ((stages[0].Activations is not null) && stages[0].Deactivations.Length > 0)
             {
-                inactiveObjects[0].AddRange(deactivations);
+                inactiveObjects[0].AddRange(stages[0].Deactivations);
             }
         }
 
-        for (int i = 1; i < numberOfStages && i < stages.Length; i++)
+        for (int i = 1; i < numberOfStages; i++)
         {
-            activations = (IToggleableObject[]) stages[i].Activations;
-            deactivations = (IToggleableObject[]) stages[i].Deactivations;
-
             activeObjects[i].AddRange(activeObjects[i-1]);
             inactiveObjects[i].AddRange(inactiveObjects[i-1]);
 
-            inactiveObjects[i].AddRange(deactivations);
-            activeObjects[i].AddRange(activations);
+            inactiveObjects[i].AddRange(stages[i].Deactivations);
+            activeObjects[i].AddRange(stages[i].Activations);
 
             foreach (IToggleableObject obj in stages[i].Deactivations)
             {
@@ -78,7 +70,7 @@ public class LevelProgresser
         }
     }
 
-    public void NextStage(int newStage)
+    public void NextStage(int nextStage)
     {
 
     }

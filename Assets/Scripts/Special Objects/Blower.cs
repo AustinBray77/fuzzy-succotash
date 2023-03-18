@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider2D))]
 public class Blower : MonoBehaviour, IToggleableObject
 {
     [SerializeField] private float maxForce;
