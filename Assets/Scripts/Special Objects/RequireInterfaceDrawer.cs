@@ -19,7 +19,7 @@ public class RequireInterfaceDrawer : PropertyDrawer
         if (property.propertyType == SerializedPropertyType.ObjectReference)
         {
             // Get attribute parameters.
-            var requiredAttribute = this.attribute as RequireInterfaceAttribute;
+            System.Type requiredAttribute = (this.attribute as RequireInterfaceAttribute).RequiredType;
 
             // Begin drawing property field.
             EditorGUI.BeginProperty(position, label, property);
@@ -29,7 +29,7 @@ public class RequireInterfaceDrawer : PropertyDrawer
 
             // Draw property field.
             //Checks if you've given a proper reference, otherwise checks if you've given a gameobject and tries to find the correct component in the gameobject
-            Object reference = EditorGUI.ObjectField(position, "", property.objectReferenceValue, requiredAttribute.RequiredType, true);
+            Object reference = EditorGUI.ObjectField(position, "", property.objectReferenceValue, requiredAttribute, true);
             
             if (reference is null || reference == property.objectReferenceValue)
             {
@@ -37,41 +37,36 @@ public class RequireInterfaceDrawer : PropertyDrawer
 
                 if (obj is GameObject g)
                 {
-                    reference = g.GetComponent(requiredAttribute.RequiredType);
+                    reference = g.GetComponent(requiredAttribute);
                 }
             }
 
-            if(reference is null)
-            {
-                //This is never called for some reason
-                InvalidAddition();
-            }
-            else
+            if(reference is not null)
             {
                 property.objectReferenceValue = reference;
             }
+            else
+            {
+                //Error message?
+                //Temporarily label inside box?
+            }
 
             //Changes the text inside of the field to be the required type instead of object
-            EditorGUI.ObjectField(position, "", property.objectReferenceValue, requiredAttribute.RequiredType, true);
+            EditorGUI.ObjectField(position, "", property.objectReferenceValue, requiredAttribute, true);
 
             // Finish drawing property field.
             EditorGUI.EndProperty();
         }
         else
         {
-            InvalidAddition();
+            // If field is not reference, show error message.
+            // Save previous color and change GUI to red.
+            var previousColor = GUI.color;
+            GUI.color = Color.red;
+            // Display label with error message.
+            EditorGUI.LabelField(position, label, new GUIContent("Invalid Reference"));
+            // Revert color change.
+            GUI.color = previousColor;
         }
-    }
-
-    private void InvalidAddition()
-    {
-        // If field is not reference, show error message.
-        // Save previous color and change GUI to red.
-        var previousColor = GUI.color;
-        GUI.color = Color.red;
-        // Display label with error message.
-        //EditorGUI.LabelField(position, label, new GUIContent("Invalid Reference"));
-        // Revert color change.
-        GUI.color = previousColor;
     }
 }
