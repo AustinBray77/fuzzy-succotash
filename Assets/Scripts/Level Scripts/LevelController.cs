@@ -14,12 +14,19 @@ public class LevelController : MonoBehaviour
     private int _numberOfStages;
     [SerializeField] private string _title;
     [SerializeField] private LevelProgresser levelChanges;
-    [SerializeField] private float MinHeight;
-    //[SerializeField] private ;
+    [SerializeField] private float minHeight;
 
     private int currentStage = 0;
 
     private double levelStartTime;
+
+    private void Update()
+    {
+        if(Player.Instance.PlayerPos.y < minHeight)
+        {
+            Respawn(RespawnInfo.playerDied);
+        }
+    }
 
     //Called when the game loads, called once per run
     public void Initialize(int index)
@@ -50,14 +57,12 @@ public class LevelController : MonoBehaviour
         _data.LogRespawn(currentStage, info);
 
         SpawnPlayer();
-
-        
     }
 
     private void SpawnPlayer()
     {
         //Fade out
-        if (!AnimationManager.Instance.FadeToColour(Color.black, SpawnPlayerPart2))
+        if (!(AnimationManager.Instance.FadeToColour(Color.black, SpawnPlayerPart2)))
         {
             Debug.LogWarning("Could not start fade out");
         }
@@ -69,7 +74,7 @@ public class LevelController : MonoBehaviour
         Player.Instance.SetTransform(playerStartPos);
 
         //Fade in
-        if (!AnimationManager.Instance.FadeFromColour(SpawnPlayerPart3))
+        if (!(AnimationManager.Instance.FadeFromColour(SpawnPlayerPart3)))
         {
             Debug.LogWarning("Could not start fade in");
         }
