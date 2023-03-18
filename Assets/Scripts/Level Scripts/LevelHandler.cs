@@ -5,8 +5,9 @@ using System;
 
 public class LevelHandler : Singleton<LevelHandler>
 {
-    //Levels
-    public LevelController[] LevelReferences;
+    //Levels (Changed to private so that other scripts cannot modify the levelControllers)
+    [SerializeField] private LevelController[] levelReferences;
+    public LevelController[] LevelReferences { get => LevelReferences; }
 
     //Current level
     public int CurrentLevelIndex { get; private set; }
@@ -24,7 +25,7 @@ public class LevelHandler : Singleton<LevelHandler>
     public void LoadLevel(int level, int stage)
     {
         //Spawns in the level and saves it
-        CurrentLevelController = Instantiate(LevelReferences[level].gameObject, Vector3.zero, Quaternion.identity).GetComponent<LevelController>();
+        CurrentLevelController = Instantiate(levelReferences[level].gameObject, Vector3.zero, Quaternion.identity).GetComponent<LevelController>();
 
         //Starts the level
         CurrentLevelController.StartLevel(stage);

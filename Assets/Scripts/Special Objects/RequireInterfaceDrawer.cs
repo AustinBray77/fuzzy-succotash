@@ -30,8 +30,8 @@ public class RequireInterfaceDrawer : PropertyDrawer
             // Draw property field.
             //Checks if you've given a proper reference, otherwise checks if you've given a gameobject and tries to find the correct component in the gameobject
             Object reference = EditorGUI.ObjectField(position, "", property.objectReferenceValue, requiredAttribute.RequiredType, true);
-
-            if(reference is null || reference == property.objectReferenceValue)
+            
+            if (reference is null || reference == property.objectReferenceValue)
             {
                 Object obj = EditorGUI.ObjectField(position, "", property.objectReferenceValue, typeof(Object), true);
 

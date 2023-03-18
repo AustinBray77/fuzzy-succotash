@@ -15,7 +15,7 @@ public class LevelController : MonoBehaviour
     [SerializeField] private string _title;
     [SerializeField] private LevelProgresser levelChanges;
 
-    int currentStage = 0;
+    private int currentStage = 0;
 
     private double levelStartTime;
 
@@ -33,6 +33,7 @@ public class LevelController : MonoBehaviour
     // Starts the level
     public void StartLevel(int stage)
     {
+        currentStage = stage;
         levelChanges.LoadStage(stage);
 
         SpawnPlayer();
@@ -49,14 +50,30 @@ public class LevelController : MonoBehaviour
     private void SpawnPlayer()
     {
         //Fade out
+        if (!AnimationManager.Instance.FadeToColour(Color.black, SpawnPlayerPart2))
+        {
+            Debug.LogWarning("Could not start fade out");
+        }
+    }
 
+    private void SpawnPlayerPart2()
+    {
         ResetLevel();
         Player.Instance.SetTransform(playerStartPos);
 
         //Fade in
+        if (!AnimationManager.Instance.FadeFromColour(SpawnPlayerPart3))
+        {
+            Debug.LogWarning("Could not start fade in");
+        }
+    }
 
+    private void SpawnPlayerPart3()
+    {
         StartRun();
     }
+
+
 
     private void StartRun()
     {
