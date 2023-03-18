@@ -2,12 +2,13 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
+using System.Collections.ObjectModel;
 
 public class LevelHandler : Singleton<LevelHandler>
 {
     //Levels (Changed to private so that other scripts cannot modify the levelControllers)
     [SerializeField] private LevelController[] levelReferences;
-    public LevelController[] LevelReferences { get => LevelReferences; }
+    public ReadOnlyCollection<LevelController> LevelReferences { get; private set; }
 
     //Current level
     public int CurrentLevelIndex { get; private set; }
@@ -19,6 +20,7 @@ public class LevelHandler : Singleton<LevelHandler>
     public void Initialize()
     {
         ControlsManager.Instance.AddCallBack(ControlsManager.Actions.respawn, (InputAction.CallbackContext context) => Respawn(LevelController.RespawnInfo.manualRespawn));
+        LevelReferences = new ReadOnlyCollection<LevelController>(levelReferences);
     }
 
     //Function to load levels
@@ -55,7 +57,13 @@ public class LevelHandler : Singleton<LevelHandler>
         SaveHandler.Instance.Save();
     }
 
+    //For some reason this is being called on run
     //Function for when the user closes the application 
-    private void OnApplicationQuit() =>
-        UnloadLevel();
+    private void OnApplicationQuit()
+    {
+        if(CurrentLevelController is not null)
+        {
+            UnloadLevel();
+        }
+    }
 }

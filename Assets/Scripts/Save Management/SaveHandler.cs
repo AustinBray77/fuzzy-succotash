@@ -6,10 +6,15 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public class SaveHandler : Singleton<SaveHandler>
 {
-    private readonly string _saveFilePath = Application.persistentDataPath + "/48p.bin";
+    private string _saveFilePath; 
     private readonly string _test_file_path = "C:/";
 
-    private Dictionary<string, ISaveableComponent> _saveableComponents;
+    public void Initialize()
+    {
+        _saveFilePath = Application.persistentDataPath + "/48p.bin";
+    }
+
+    private Dictionary<string, ISaveableComponent> _saveableComponents = new();
 
     //Methods for adding and removing saveable components for when they load in
     public void AddSaveableComponent(ISaveableComponent saveableComponent)

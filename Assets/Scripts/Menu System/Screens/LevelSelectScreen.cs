@@ -58,13 +58,13 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
         int cardsPerRow = (int)(Screen.width / (LevelCard.CARD_WIDTH + 2 * s_cardMargin));
 
         int cardsPerPage = (rows * cardsPerRow);
-        int numberofPages = Mathf.CeilToInt(LevelHandler.Instance.LevelReferences.Length / cardsPerPage);
+        int numberofPages = Mathf.CeilToInt(LevelHandler.Instance.LevelReferences.Count / cardsPerPage);
         _pages = new Page[numberofPages];
 
         for (int i = 0; i < numberofPages; i++)
         {
             int startIndex = i * cardsPerPage;
-            int endIndex = Mathf.Min((i + 1) * cardsPerPage - 1, LevelHandler.Instance.LevelReferences.Length - 1);
+            int endIndex = Mathf.Min((i + 1) * cardsPerPage - 1, LevelHandler.Instance.LevelReferences.Count - 1);
             GameObject pageObject = new GameObject("Page " + i);
             LevelCard[] levelCards = GenerateLevelCards(pageObject.transform, startIndex, endIndex, rows, cardsPerRow);
             _pages[i] = new Page(levelCards, pageObject);

@@ -16,8 +16,8 @@ public class LevelProgresser
     {
         [SerializeField][RequireInterface(typeof(IToggleableObject))] private MonoBehaviour[] _activations;
         [SerializeField][RequireInterface(typeof(IToggleableObject))] private MonoBehaviour[] _deactivations;
-        public IToggleableObject[] Activations { get => _activations as IToggleableObject[]; }
-        public IToggleableObject[] Deactivations { get => _deactivations as IToggleableObject[]; }
+        public IToggleableObject[] Activations { get =>  (_activations as IToggleableObject[]) ?? (new IToggleableObject[0]); }
+        public IToggleableObject[] Deactivations { get => (_deactivations as IToggleableObject[]) ?? (new IToggleableObject[0]); }
     }
 
     [SerializeField] private Stage[] stages;
@@ -31,9 +31,15 @@ public class LevelProgresser
 
     public void Initialize()
     {
-        numberOfStages = stages.Length;
+        numberOfStages = (stages is null) ? 0 : stages.Length;
         activeObjects = new List<IToggleableObject>[numberOfStages];
         inactiveObjects = new List<IToggleableObject>[numberOfStages];
+
+        for(int i = 0; i < numberOfStages - 1; i++)
+        {
+            activeObjects[i] = new();
+            inactiveObjects[i] = new();
+        }
 
         //Creates an array of lists of which objects should be active at each stage (not just which ones change between stages)
         //This way any stage can be loaded directly, without extra steps
@@ -50,7 +56,7 @@ public class LevelProgresser
             }
         }
 
-        for (int i = 1; i < numberOfStages; i++)
+        for (int i = 1; i < numberOfStages - 1; i++)
         {
             activeObjects[i].AddRange(activeObjects[i-1]);
             inactiveObjects[i].AddRange(inactiveObjects[i-1]);

@@ -11,9 +11,11 @@ public class LevelController : MonoBehaviour
     public LevelData Data { get => _data; }
 
     [SerializeField] private int _id;
-    [SerializeField] private int _numberOfStages;
+    private int _numberOfStages;
     [SerializeField] private string _title;
     [SerializeField] private LevelProgresser levelChanges;
+    [SerializeField] private float MinHeight;
+    //[SerializeField] private ;
 
     private int currentStage = 0;
 
@@ -24,6 +26,9 @@ public class LevelController : MonoBehaviour
     {
         //Set up the level Progressor so that it can easily move through stages later on
         levelChanges.Initialize();
+
+        //Number of stages is calculated based on the serialized fields in the inspector
+        _numberOfStages = levelChanges.NumberOfStages;
 
         //Reinitialize the data
         _data = new LevelData("level_" + _id, _numberOfStages, _title, index);
@@ -45,6 +50,8 @@ public class LevelController : MonoBehaviour
         _data.LogRespawn(currentStage, info);
 
         SpawnPlayer();
+
+        
     }
 
     private void SpawnPlayer()
@@ -73,8 +80,6 @@ public class LevelController : MonoBehaviour
         StartRun();
     }
 
-
-
     private void StartRun()
     {
         _data.LogAttemptStart(currentStage);
@@ -91,7 +96,6 @@ public class LevelController : MonoBehaviour
 
     private void ResetLevel()
     {
-
     }
 
     public void PauseLevel()

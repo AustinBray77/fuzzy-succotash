@@ -20,7 +20,7 @@ public class MenuController : Singleton<MenuController>
     public UIPrefabs Prefabs;
 
     //Method for on start
-    private void Start()
+    public void Initialize()
     {
         //Loads the screens to the dictionary
         InitializeScreens();

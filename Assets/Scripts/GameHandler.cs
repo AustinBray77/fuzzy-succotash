@@ -1,13 +1,16 @@
 using UnityEngine;
+using System;
 
 public class GameHandler : Singleton<GameHandler>
 {
     private void Start()
     {
+        SaveHandler.Instance.Initialize(); //Set up file path
         ControlsManager.Instance.Initialize(); //setup of input actions
         LevelHandler.Instance.Initialize(); //Level handler relies on controls being set to add callbacks for inputs
+        MenuController.Instance.Initialize(); //This relies on previous initialization to set up menus
 
-        for (int i = 0; i < LevelHandler.Instance.LevelReferences.Length; i++)
+        for (int i = 0; i < LevelHandler.Instance.LevelReferences.Count; i++)
         {
             LevelHandler.Instance.LevelReferences[i].Initialize(i);
         }
@@ -16,9 +19,9 @@ public class GameHandler : Singleton<GameHandler>
         {
             SaveHandler.Instance.Load();
         }
-        catch
+        catch (Exception e)
         {
-            Debug.LogWarning("No Save File Found, All Save Data is Default");
+            Debug.Log("Could not load save data, ERROR: " + e.Message);
         }
     }
 }
