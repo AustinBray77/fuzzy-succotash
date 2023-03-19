@@ -69,12 +69,12 @@ public class ControlsManager : Singleton<ControlsManager>
         enumToAction[action].performed += callback;
     }
 
-    public void SetInputMap(InputMap newMap)
+    public void SetInputMaps(params InputMap[] newMaps)
     {
         //Add code
         foreach (InputMap map in mapNames.Keys)
         {
-            if (map == newMap)
+            if (Array.IndexOf(newMaps, map) != -1)
             {
                 inputActions.FindActionMap(mapNames[map]).Enable();
             }
@@ -83,6 +83,11 @@ public class ControlsManager : Singleton<ControlsManager>
                 inputActions.FindActionMap(mapNames[map]).Disable();
             }
         }
+    }
+
+    public void DisableInputMap(InputMap newMap)
+    {
+        inputActions.FindActionMap(mapNames[newMap]).Disable();
     }
 
     public void DiableInput()

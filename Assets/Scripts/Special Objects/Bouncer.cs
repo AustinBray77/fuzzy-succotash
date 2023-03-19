@@ -11,7 +11,7 @@ public class Bouncer : MonoBehaviour, IToggleableObject
     private static readonly string activeTag = PlayerMovement.TagFromSurface(PlayerMovement.Surface.bouncer);
     private static readonly string inActiveTag = PlayerMovement.TagFromSurface(PlayerMovement.Surface.ground);
 
-    [SerializeField] private float bounceFactor;
+    [SerializeField] private float bounceFactor = 1;
 
     static Color DisabledColour = Color.gray;
     static Color BouncerColour = Color.yellow;

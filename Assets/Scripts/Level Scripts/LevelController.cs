@@ -22,7 +22,7 @@ public class LevelController : MonoBehaviour
 
     private void Update()
     {
-        if(Player.Instance.PlayerPos.y < minHeight)
+        if(Player.Instance.PlayerPos.y < minHeight && !Player.Instance.Data.RespawningState)
         {
             Respawn(RespawnInfo.playerDied);
         }
@@ -45,6 +45,7 @@ public class LevelController : MonoBehaviour
     // Starts the level
     public void StartLevel(int stage)
     {
+        ControlsManager.Instance.DisableInputMap(ControlsManager.InputMap.gameplay); //change to set to pause later
         currentStage = stage;
         levelChanges.LoadStage(stage);
 
@@ -54,6 +55,7 @@ public class LevelController : MonoBehaviour
     // Respawns the player
     public void Respawn(RespawnInfo info)
     {
+        ControlsManager.Instance.DisableInputMap(ControlsManager.InputMap.gameplay); //change to set to pause later
         _data.LogRespawn(currentStage, info);
 
         SpawnPlayer();
@@ -61,8 +63,10 @@ public class LevelController : MonoBehaviour
 
     private void SpawnPlayer()
     {
+        
+        Player.Instance.Data.RespawningState = true;
         //Fade out
-        if (!(AnimationManager.Instance.FadeToColour(Color.black, SpawnPlayerPart2)))
+        if (!AnimationManager.Instance.FadeToColour(Color.black, SpawnPlayerPart2))
         {
             Debug.LogWarning("Could not start fade out");
         }
@@ -70,51 +74,53 @@ public class LevelController : MonoBehaviour
 
     private void SpawnPlayerPart2()
     {
-        ResetLevel();
         Player.Instance.SetTransform(playerStartPos);
+        Player.Instance.Movement.ResetMovement();
+
+        ResetLevel();
 
         //Fade in
-        if (!(AnimationManager.Instance.FadeFromColour(SpawnPlayerPart3)))
+        if (!AnimationManager.Instance.FadeFromColour(StartRun))
         {
             Debug.LogWarning("Could not start fade in");
         }
-    }
-
-    private void SpawnPlayerPart3()
-    {
-        StartRun();
     }
 
     private void StartRun()
     {
         _data.LogAttemptStart(currentStage);
 
+        //Turn off invincibility
+        Player.Instance.Data.RespawningState = false;
+
         //Enable gameplay inputmap
-        ControlsManager.Instance.SetInputMap(ControlsManager.InputMap.gameplay);
+        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.gameplay);
 
         levelStartTime = Time.timeAsDouble;
         Time.timeScale = 1;
 
         //Tell the timer UI to start
-
     }
 
     private void ResetLevel()
     {
+        levelChanges.LoadStage(currentStage);
     }
 
     public void PauseLevel()
     {
         Time.timeScale = 0;
-        ControlsManager.Instance.SetInputMap(ControlsManager.InputMap.menus);
+        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.menus);
         //Open pause menu?
     }
 
     public void LevelCompleted()
     {
+        Player.Instance.Data.RespawningState = true;
+
         //Pause level and bring up level completion menu?
         Time.timeScale = 0;
-        ControlsManager.Instance.SetInputMap(ControlsManager.InputMap.menus);
+        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.menus);
 
         double time = Time.timeAsDouble - levelStartTime;
 

@@ -83,8 +83,9 @@ public class PlayerMovement : MonoBehaviour
     {
         playerRB = GetComponent<Rigidbody2D>();
         Time.fixedDeltaTime = (float)1 / 100; //100 fps
-        savedChargedForces.Clear();
         Physics2D.gravity = gravity;
+
+        ResetMovement();
     }
 
     void FixedUpdate()
@@ -267,7 +268,20 @@ public class PlayerMovement : MonoBehaviour
         }        
     }
 
-    private readonly struct MovementValues
+    public void ResetMovement()
+    {
+        playerRB.velocity = Vector2.zero;
+        playerRB.angularVelocity = 0;
+
+        stillTouchingJumpSurface = false;
+        heldJump = false;
+        jumpDirection = Vector2.zero;
+        highestPrioritySurface = Surface.air;
+        totalContactNormals = Vector3.zero;
+        savedChargedForces.Clear();
+    }
+
+private readonly struct MovementValues
     {
         public MovementValues(float maxAccel, float accelFalloff, float minAccel, float maxDecel, float decelFalloff, float minDecel, bool canJump)
         {
