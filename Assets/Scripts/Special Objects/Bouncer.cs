@@ -4,14 +4,14 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
-[RequireComponent (typeof (Collider2D))]
+[RequireComponent(typeof(Collider2D))]
 public class Bouncer : MonoBehaviour, IToggleableObject
 {
     public bool Activated { get; private set; } = true;
     private static readonly string activeTag = PlayerMovement.TagFromSurface(PlayerMovement.Surface.bouncer);
     private static readonly string inActiveTag = PlayerMovement.TagFromSurface(PlayerMovement.Surface.ground);
 
-    [SerializeField] private float forceAdded;
+    [SerializeField] private float bounceFactor;
 
     static Color DisabledColour = Color.gray;
     static Color BouncerColour = Color.yellow;
@@ -30,7 +30,7 @@ public class Bouncer : MonoBehaviour, IToggleableObject
         tag = inActiveTag;
     }
 
-    private void OnCollisionEnter2D (Collision2D col)
+    private void OnCollisionEnter2D(Collision2D col)
     {
         if (Activated)
         {
@@ -43,7 +43,7 @@ public class Bouncer : MonoBehaviour, IToggleableObject
             }
             avgNormal = avgNormal.normalized * -1;
 
-            float force = Mathf.Abs(Vector2.Dot(avgNormal, col.relativeVelocity)) + forceAdded;
+            float force = Mathf.Abs(Vector2.Dot(avgNormal, col.relativeVelocity)) * bounceFactor;
 
             col.rigidbody.AddForce(force * avgNormal, ForceMode2D.Impulse);
         }

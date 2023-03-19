@@ -5,7 +5,7 @@ using System;
 
 public interface IToggleableObject
 {
-    public bool Activated { get; }
+    bool Activated { get; }
 
     void Activate();
     void Deactivate();
