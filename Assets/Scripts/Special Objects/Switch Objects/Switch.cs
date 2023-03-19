@@ -10,7 +10,7 @@ public class Switch : MonoBehaviour, IToggleableObject
     private static Color SwitchColor = Color.green;
     private static Color DisabledColor = Color.grey;
 
-    [SerializeField] private IToggleableObject[] _associatedObjects;
+    [SerializeField][RequireInterface(typeof(IToggleableObject))] private MonoBehaviour[] _associatedObjects;
 
     public void Activate()
     {
@@ -26,7 +26,7 @@ public class Switch : MonoBehaviour, IToggleableObject
 
     public void Toggle()
     {
-        foreach (IToggleableObject toggleableObject in _associatedObjects)
+        foreach (IToggleableObject toggleableObject in (_associatedObjects as IToggleableObject[]))
         {
             if (toggleableObject.Activated)
             {
