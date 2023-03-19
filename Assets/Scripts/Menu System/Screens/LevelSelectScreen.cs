@@ -68,7 +68,7 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
     public void GeneratePages()
     {
         int rows = (int)(Screen.height / (LevelCard.CARD_HEIGHT + 2 * s_cardMargin));
-        int cardsPerRow = (int)(Screen.width / (LevelCard.CARD_WIDTH + 2 * s_cardMargin));
+        int cardsPerRow = (int)((Screen.width - 100) / (LevelCard.CARD_WIDTH + 2 * s_cardMargin));
 
         int cardsPerPage = (rows * cardsPerRow);
         int numberofPages = Mathf.CeilToInt(LevelHandler.Instance.LevelReferences.Count / (float)cardsPerPage);
@@ -109,7 +109,7 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
                 row++;
             }
 
-            LevelCard currentCard = Instantiate(MenuController.Instance.Prefabs.LevelCard, page).GetComponent<LevelCard>();
+            LevelCard currentCard = Instantiate(MenuController.Instance.Prefabs.LevelCard, transform).GetComponent<LevelCard>();
 
             currentCard.GenerateFromLevel(LevelHandler.Instance.LevelReferences[i].Data);
 
@@ -120,11 +120,12 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
             cardTransform.anchorMax = new Vector2(0, 1);
             cardTransform.pivot = new Vector2(0, 0);
 
-            float xPos = column * (LevelCard.CARD_WIDTH + 2 * s_cardMargin) + s_cardMargin;
-            float yPos = (rows - row) * (LevelCard.CARD_HEIGHT + 2 * s_cardMargin) - (LevelCard.CARD_HEIGHT / 2) - s_cardMargin;
+            float xPos = column * (LevelCard.CARD_WIDTH + 2 * s_cardMargin) + s_cardMargin + 50;
+            float yPos = -((row + 1) * (LevelCard.CARD_HEIGHT + 2 * s_cardMargin) + s_cardMargin);
 
             cardTransform.anchoredPosition = new Vector2(xPos, yPos);
 
+            currentCard.transform.parent = page;
             levelCards[i] = currentCard;
         }
 
