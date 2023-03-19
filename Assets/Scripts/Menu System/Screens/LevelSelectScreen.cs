@@ -17,6 +17,14 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
 
         public GameObject Object { get; private set; }
         public LevelCard[] Cards { get; private set; }
+
+        public void ReloadCards()
+        {
+            foreach (LevelCard card in Cards)
+            {
+                card.ReloadData();
+            }
+        }
     }
 
     [SerializeField] private List<GameObject> _screenElements;
@@ -42,6 +50,10 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
 
     public void Load()
     {
+        Functions.SetActiveAllObjects(ScreenElements, true);
+
+        ReloadPages();
+
         _pages[0].Object.SetActive(true);
         _currentLevelPage = 0;
         _previousPageButton.gameObject.SetActive(false);
@@ -50,6 +62,7 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
     public void Unload()
     {
         Functions.SetActiveAllObjects(ScreenElements, false);
+        _pages[_currentLevelPage].Object.SetActive(false);
     }
 
     public void GeneratePages()
@@ -58,14 +71,23 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
         int cardsPerRow = (int)(Screen.width / (LevelCard.CARD_WIDTH + 2 * s_cardMargin));
 
         int cardsPerPage = (rows * cardsPerRow);
-        int numberofPages = Mathf.CeilToInt(LevelHandler.Instance.LevelReferences.Count / cardsPerPage);
+        int numberofPages = Mathf.CeilToInt(LevelHandler.Instance.LevelReferences.Count / (float)cardsPerPage);
         _pages = new Page[numberofPages];
 
         for (int i = 0; i < numberofPages; i++)
         {
             int startIndex = i * cardsPerPage;
             int endIndex = Mathf.Min((i + 1) * cardsPerPage - 1, LevelHandler.Instance.LevelReferences.Count - 1);
-            GameObject pageObject = new GameObject("Page " + i);
+            GameObject pageObject = new GameObject("Page " + i, typeof(RectTransform));
+
+            RectTransform pageRect = pageObject.GetComponent<RectTransform>();
+
+            //Makes so the page fills the whole screen
+            pageRect.anchorMin = Vector2.zero;
+            pageRect.anchorMax = Vector2.one;
+            pageRect.offsetMin = Vector2.zero;
+            pageRect.offsetMax = Vector2.zero;
+
             LevelCard[] levelCards = GenerateLevelCards(pageObject.transform, startIndex, endIndex, rows, cardsPerRow);
             _pages[i] = new Page(levelCards, pageObject);
             _pages[i].Object.transform.parent = transform;
@@ -79,7 +101,7 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
 
         int row = 0, column = 0;
 
-        for (int i = start; i < end; i++, column++)
+        for (int i = start; i <= end; i++, column++)
         {
             if (column >= cardsPerRow)
             {
@@ -99,7 +121,7 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
             cardTransform.pivot = new Vector2(0, 0);
 
             float xPos = column * (LevelCard.CARD_WIDTH + 2 * s_cardMargin) + s_cardMargin;
-            float yPos = -((row + 1) * (LevelCard.CARD_HEIGHT + 2 * s_cardMargin) + s_cardMargin);
+            float yPos = (rows - row) * (LevelCard.CARD_HEIGHT + 2 * s_cardMargin) - (LevelCard.CARD_HEIGHT / 2) - s_cardMargin;
 
             cardTransform.anchoredPosition = new Vector2(xPos, yPos);
 
@@ -125,5 +147,13 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
         _pages[_currentLevelPage].Object.SetActive(true);
 
         _previousPageButton.gameObject.SetActive(_currentLevelPage > 0);
+    }
+
+    private void ReloadPages()
+    {
+        foreach (Page page in _pages)
+        {
+            page.ReloadCards();
+        }
     }
 }

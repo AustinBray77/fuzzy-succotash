@@ -20,6 +20,13 @@ public class LevelHandler : Singleton<LevelHandler>
     public void Initialize()
     {
         ControlsManager.Instance.AddCallBack(ControlsManager.Actions.respawn, (InputAction.CallbackContext context) => Respawn(LevelController.RespawnInfo.manualRespawn));
+
+        for (int i = 0; i < levelReferences.Length; i++)
+        {
+            levelReferences[i].Initialize(i);
+            Debug.Log("Loaded level:" + i);
+        }
+
         LevelReferences = new ReadOnlyCollection<LevelController>(levelReferences);
     }
 
@@ -61,7 +68,7 @@ public class LevelHandler : Singleton<LevelHandler>
     //Function for when the user closes the application 
     private void OnApplicationQuit()
     {
-        if(CurrentLevelController is not null)
+        if (CurrentLevelController is not null)
         {
             UnloadLevel();
         }
