@@ -418,6 +418,8 @@ MonoBehaviour:
       _deactivations: []
     - _activations: []
       _deactivations: []
+    - _activations: []
+      _deactivations: []
   minHeight: -10
 --- !u!1 &235089226
 GameObject:

@@ -12,9 +12,11 @@ public class LevelCard : MonoBehaviour
     private Star[] _stars;
 
     public const float CARD_HEIGHT = 200;
-    public const float CARD_WIDTH = 100;
+    public const float CARD_WIDTH = 150;
 
     private LevelData _levelReference;
+
+    private const float STAR_MARGIN = 12.5f;
 
     public void GenerateFromLevel(LevelData level)
     {
@@ -28,6 +30,7 @@ public class LevelCard : MonoBehaviour
 
     private void PlaceStars(LevelData level)
     {
+
         _stars = new Star[level.NumberOfStages];
 
         for (int i = 0; i < level.NumberOfStages; i++)
@@ -39,12 +42,13 @@ public class LevelCard : MonoBehaviour
             RectTransform starRectTransform = currentStar.GetComponent<RectTransform>();
 
             //Set anchor of star to top left in main transform
-            starRectTransform.anchorMin = new Vector2(0, 1);
-            starRectTransform.anchorMax = new Vector2(0, 1);
+            starRectTransform.anchorMin = new Vector2(0.5f, 1);
+            starRectTransform.anchorMax = new Vector2(0.5f, 1);
             starRectTransform.pivot = new Vector2(0, 0);
 
-            float xPos = i * (Star.STAR_SIZE + 5);
-            float yPos = -(_rectTransform.sizeDelta.y - 25);
+            float xPos = ((i % 3) - 1) * (Star.STAR_SIZE + STAR_MARGIN) - (Star.STAR_SIZE / 2);
+            int row = i / 3;
+            float yPos = -(150 + row * (Star.STAR_SIZE + STAR_MARGIN));
 
             starRectTransform.anchoredPosition = new Vector2(xPos, yPos);
 
