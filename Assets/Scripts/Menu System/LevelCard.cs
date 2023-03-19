@@ -14,6 +14,8 @@ public class LevelCard : MonoBehaviour
     public const float CARD_HEIGHT = 200;
     public const float CARD_WIDTH = 100;
 
+    private LevelData _levelReference;
+
     public void GenerateFromLevel(LevelData level)
     {
         _rectTransform = GetComponent<RectTransform>();
@@ -42,11 +44,16 @@ public class LevelCard : MonoBehaviour
             starRectTransform.pivot = new Vector2(0, 0);
 
             float xPos = i * (Star.STAR_SIZE + 5);
-            float yPos = _rectTransform.sizeDelta.y - 25;
+            float yPos = -(_rectTransform.sizeDelta.y - 25);
 
             starRectTransform.anchoredPosition = new Vector2(xPos, yPos);
 
             _stars[i] = currentStar;
         }
+    }
+
+    public void ReloadData()
+    {
+
     }
 }

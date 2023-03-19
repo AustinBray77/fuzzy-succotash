@@ -10,11 +10,6 @@ public class GameHandler : Singleton<GameHandler>
         LevelHandler.Instance.Initialize(); //Level handler relies on controls being set to add callbacks for inputs
         MenuController.Instance.Initialize(); //This relies on previous initialization to set up menus
 
-        for (int i = 0; i < LevelHandler.Instance.LevelReferences.Count; i++)
-        {
-            LevelHandler.Instance.LevelReferences[i].Initialize(i);
-        }
-
         try
         {
             SaveHandler.Instance.Load();
