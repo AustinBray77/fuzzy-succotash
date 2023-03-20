@@ -7,8 +7,9 @@ public class GameHandler : Singleton<GameHandler>
     {
         SaveHandler.Instance.Initialize(); //Set up file path
         ControlsManager.Instance.Initialize(); //setup of input actions
-        LevelHandler.Instance.Initialize(); 
+        LevelHandler.Instance.Initialize();
         MenuController.Instance.Initialize(); //This relies on previous initialization to set up menus
+        Player.Instance.Initialize();
 
         try
         {

@@ -29,6 +29,7 @@ public class MainScreen : MonoBehaviour, IScreen
     {
         //Temp change to load test level
         LevelHandler.Instance.LoadLevel(0, 0);
+        Unload();
 
         //MenuController.Instance.OpenScreen("LevelSelect");
     }

@@ -1925,6 +1925,11 @@ MonoBehaviour:
   _title: Test
   levelChanges:
     stages:
-    - _activations: []
-      _deactivations: []
+    - _activations:
+      - {fileID: 7175523183711377323}
+      _deactivations:
+      - {fileID: 3706853813508330104}
+      - {fileID: 3318609344413405897}
+      - {fileID: 7048231813576272691}
+      - {fileID: 7375567585686524651}
   minHeight: -10

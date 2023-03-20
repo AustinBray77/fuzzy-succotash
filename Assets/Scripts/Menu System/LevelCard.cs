@@ -20,6 +20,8 @@ public class LevelCard : MonoBehaviour
 
     public void GenerateFromLevel(LevelData level)
     {
+        _levelReference = level;
+
         _rectTransform = GetComponent<RectTransform>();
 
         _title.text = level.Title;
@@ -30,7 +32,6 @@ public class LevelCard : MonoBehaviour
 
     private void PlaceStars(LevelData level)
     {
-
         _stars = new Star[level.NumberOfStages];
 
         for (int i = 0; i < level.NumberOfStages; i++)

@@ -41,7 +41,7 @@ public class LevelController : MonoBehaviour
 
     private void Update()
     {
-        if(Player.Instance.PlayerPos.y < minHeight && !Player.Instance.Data.RespawningState)
+        if (Player.Instance.PlayerPos.y < minHeight && !Player.Instance.Data.RespawningState)
         {
             Respawn(RespawnInfo.playerDied);
         }
@@ -50,26 +50,28 @@ public class LevelController : MonoBehaviour
     //Called when the game loads, called once per run
     public void Initialize(int index)
     {
+        //Reinitialize the data
+        _data = new LevelData("level_" + _id, _numberOfStages, _title, index);
+        SaveHandler.Instance.AddSaveableComponent(_data);
+    }
+
+    public void OnSpawn()
+    {
+        _data = (LevelData)SaveHandler.Instance.GetSaveableComponent("level_" + _id);
+
         //Set up the level Progressor so that it can easily move through stages later on
         levelChanges.Initialize();
 
         //Number of stages is calculated based on the serialized fields in the inspector
         _numberOfStages = levelChanges.NumberOfStages;
-
-        //Reinitialize the data
-        _data = new LevelData("level_" + _id, _numberOfStages, _title, index);
-        SaveHandler.Instance.AddSaveableComponent(_data);
-
-        Debug.Log("Initilization Successful:");
     }
 
     // Starts the level
     public void StartLevel(int stage)
     {
-        Debug.Log(_data);
-
         ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.pause);
         currentStage = stage;
+
         levelChanges.LoadStage(stage);
 
         SpawnPlayer();
@@ -87,7 +89,7 @@ public class LevelController : MonoBehaviour
 
     private void SpawnPlayer()
     {
-        
+
         Player.Instance.Data.RespawningState = true;
         //Fade out
         if (!AnimationManager.Instance.FadeToColour(Color.black, SpawnPlayerPart2))
@@ -133,7 +135,7 @@ public class LevelController : MonoBehaviour
 
     public void PausePressed()
     {
-        if(levelPaused)
+        if (levelPaused)
         {
             //Close pause menu
 
