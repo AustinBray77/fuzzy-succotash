@@ -8,6 +8,7 @@ using UnityEngine.InputSystem;
 
 //Note: Use proper conventions: https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions
 
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
     //In order of priority (if touching multiple, a higher number will take precendence)
@@ -30,7 +31,8 @@ public class PlayerMovement : MonoBehaviour
 
     public static string TagFromSurface(Surface surface)
     {
-        foreach (Tuple<string, Surface> tuple in tagToSurface){
+        foreach (Tuple<string, Surface> tuple in tagToSurface)
+        {
             if (tuple.Item2 == surface)
             { return tuple.Item1; }
         }
@@ -39,7 +41,8 @@ public class PlayerMovement : MonoBehaviour
 
     public static Surface? SurfaceFromTag(string tag)
     {
-        foreach (Tuple<string, Surface> tuple in tagToSurface){
+        foreach (Tuple<string, Surface> tuple in tagToSurface)
+        {
             if (tuple.Item1 == tag)
             { return tuple.Item2; }
         }
@@ -79,7 +82,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 gravity = new Vector2(0, -14);
 
     // Start is called before the first frame update
-    void Start()
+    public void Initialize()
     {
         playerRB = GetComponent<Rigidbody2D>();
         Time.fixedDeltaTime = (float)1 / 100; //100 fps
@@ -95,24 +98,24 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-    //Acceleration
+        //Acceleration
         float XInput = ControlsManager.Instance.XInput;
         //Debug.Log(XInput);
         float accel = 0;
         if (XInput != 0)
         {
             float inputDirection = Mathf.Sign(XInput);
-                                              //Velocity relative to the direction of input                      
+            //Velocity relative to the direction of input                      
             accel = CalculateAcceleration(playerRB.velocity.x * inputDirection, surfaceProperties[highestPrioritySurface]);
             playerRB.AddForce(new Vector2(XInput * accel * Time.fixedDeltaTime, 0), ForceMode2D.Impulse);
         }
 
-    //Decleration
+        //Decleration
         float playerVelocityDirection = Mathf.Sign(playerRB.velocity.x);
         float decel = CalculateDeceleration(Mathf.Abs(playerRB.velocity.x), surfaceProperties[highestPrioritySurface]);
-        
+
         //if the deceleration is greater than velocity, then add a force which will bring velocity to zero
-        if(decel * Time.fixedDeltaTime >= Mathf.Abs(playerRB.velocity.x))
+        if (decel * Time.fixedDeltaTime >= Mathf.Abs(playerRB.velocity.x))
         {
             playerRB.AddForce(new Vector2(-1 * playerRB.velocity.x, 0), ForceMode2D.Impulse);
         }
@@ -125,7 +128,7 @@ public class PlayerMovement : MonoBehaviour
 
         //Debug.Log(ControlsManager.Instance.Jump);
 
-    //Jumping
+        //Jumping
 
         if (!ControlsManager.Instance.Jump)
         {
@@ -138,15 +141,15 @@ public class PlayerMovement : MonoBehaviour
         {
             stillTouchingJumpSurface = false;
         }
-         
-        if(ControlsManager.Instance.Jump)
+
+        if (ControlsManager.Instance.Jump)
         {
             //This order of conditions means that if you have held the spacebar since you won't jump again until you release and press it again
             //This can be changed to auto jump after the max force has been given (by setting heldJump to false after the time is up)
             //Or it can be completely removed (by changing the else if to and if)
-            
+
             //If still holding jump & with time limit then add extra force
-            if(heldJump)
+            if (heldJump)
             {
                 double timeAfterJump = Time.timeAsDouble - jumpTime;
                 if (timeAfterJump >= minExtraJumpTime && timeAfterJump <= maxExtraJumpTime)
@@ -156,7 +159,8 @@ public class PlayerMovement : MonoBehaviour
             }
 
             //If holding jump and able to jump then jump
-            /*else*/ if (surfaceProperties[highestPrioritySurface].canJump && !stillTouchingJumpSurface)
+            /*else*/
+            if (surfaceProperties[highestPrioritySurface].canJump && !stillTouchingJumpSurface)
             {
                 jumpDirection = (totalContactNormals.normalized + jumpBias).normalized;
                 Vector2 force = jumpDirection * jumpForce;
@@ -172,7 +176,7 @@ public class PlayerMovement : MonoBehaviour
 
                 savedChargedForces.Clear();
                 playerRB.AddForce(force, ForceMode2D.Impulse);
-                
+
                 stillTouchingJumpSurface = true;
                 heldJump = true;
                 jumpTime = Time.timeAsDouble;
@@ -193,10 +197,10 @@ public class PlayerMovement : MonoBehaviour
         UpdateCollisionInfo(col);
 
         //Saving charges for charged walls
-        if(col.gameObject.CompareTag("Charged Ground"))
+        if (col.gameObject.CompareTag("Charged Ground"))
         {
             Vector2 avgNormal = Vector2.zero;
-            
+
             ContactPoint2D[] contacts = new ContactPoint2D[col.contactCount];
             col.GetContacts(contacts);
             foreach (ContactPoint2D point in contacts)
@@ -223,7 +227,7 @@ public class PlayerMovement : MonoBehaviour
         UpdateCollisionInfo(col);
     }
 
-    
+
     private void OnCollisionExit2D(Collision2D col)
     {
         //Debug.Log(col.gameObject.name);
@@ -247,14 +251,14 @@ public class PlayerMovement : MonoBehaviour
         //adds the average direction of the contact normal (for finding jumping direction) 
         ContactPoint2D[] contacts = new ContactPoint2D[col.contactCount];
         col.GetContacts(contacts);
-        foreach(ContactPoint2D point in contacts)
+        foreach (ContactPoint2D point in contacts)
         {
             totalContactNormals += point.normal;
         }
 
         //If the tag matches a surface type, and that surface is higher in priority than the current highest, then replace the highest priority surface
         Surface? surface = SurfaceFromTag(tag);
-        
+
         if (surface != null && (int)highestPrioritySurface < (int)(Surface)surface)
         {
             highestPrioritySurface = (Surface)surface;
@@ -262,15 +266,15 @@ public class PlayerMovement : MonoBehaviour
 
         foreach (Tuple<string, Surface> pair in tagToSurface)
         {
-            
-            if(pair.Item1 == tag)
+
+            if (pair.Item1 == tag)
             {
                 if ((int)highestPrioritySurface < (int)pair.Item2)
                 {
                     highestPrioritySurface = pair.Item2;
                 }
             }
-        }        
+        }
     }
 
     public void ResetMovement()
@@ -286,7 +290,7 @@ public class PlayerMovement : MonoBehaviour
         savedChargedForces.Clear();
     }
 
-private readonly struct MovementValues
+    private readonly struct MovementValues
     {
         public MovementValues(float maxAccel, float accelFalloff, float minAccel, float maxDecel, float decelFalloff, float minDecel, bool canJump)
         {
@@ -323,7 +327,7 @@ private readonly struct MovementValues
         }
         //avoids a division by zero
         //In this case the function is just a straight line, so either max or min can be taken
-        else if(values.maxAccel - values.minAccel == 0)
+        else if (values.maxAccel - values.minAccel == 0)
         {
             accel = values.maxAccel;
         }

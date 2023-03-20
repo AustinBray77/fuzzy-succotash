@@ -10,6 +10,6 @@ public class PlayerData : MonoBehaviour
     //Turned on after you complete the level or you have died
     //Stops you from triggering the level finish or triggering the death call multiple times
     public bool RespawningState { get; set; } = false;
-                                        
+
     public bool Invincible { get; set; } = false;
 }

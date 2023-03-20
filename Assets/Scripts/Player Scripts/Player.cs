@@ -26,12 +26,17 @@ public class Player : Singleton<Player>
     {
         //Singleton set up code
         base.Awake();
-        
+
         //Gets references
         movement = GetComponent<PlayerMovement>();
         data = GetComponent<PlayerData>();
         tag = PlayerTag;
         SetActive(false);
+    }
+
+    public void Initialize()
+    {
+        movement.Initialize();
     }
 
     public void SetTransform(Transform newTransform)
