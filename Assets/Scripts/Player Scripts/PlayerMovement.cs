@@ -88,6 +88,11 @@ public class PlayerMovement : MonoBehaviour
         ResetMovement();
     }
 
+    public void SetKinematic(bool isKinematic)
+    {
+        playerRB.isKinematic = isKinematic;
+    }
+
     void FixedUpdate()
     {
     //Acceleration

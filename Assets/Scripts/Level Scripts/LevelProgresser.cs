@@ -35,7 +35,7 @@ public class LevelProgresser
         activeObjects = new List<IToggleableObject>[numberOfStages];
         inactiveObjects = new List<IToggleableObject>[numberOfStages];
 
-        for(int i = 0; i < numberOfStages - 1; i++)
+        for(int i = 0; i < numberOfStages; i++)
         {
             activeObjects[i] = new();
             inactiveObjects[i] = new();

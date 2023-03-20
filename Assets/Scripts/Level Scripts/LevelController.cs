@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class LevelController : MonoBehaviour
 {
-    public bool LevelRunning { get; private set; } = false;
+    //public bool LevelRunning { get; private set; } = false;
+    private bool levelPaused = false;
     [SerializeField] Transform playerStartPos;
 
     private LevelData _data;
@@ -19,6 +21,23 @@ public class LevelController : MonoBehaviour
     private int currentStage = 0;
 
     private double levelStartTime;
+
+    private void Start()
+    {
+        //Adds callbacks for the respawn and pause buttons
+        ControlsManager.Instance.AddCallBack(ControlsManager.Actions.respawn, RespawnPressedCallback);
+        ControlsManager.Instance.AddCallBack(ControlsManager.Actions.pause, PausePressedCallback);
+    }
+
+    private void RespawnPressedCallback(InputAction.CallbackContext context)
+    {
+        Respawn(RespawnInfo.manualRespawn);
+    }
+
+    private void PausePressedCallback(InputAction.CallbackContext context)
+    {
+        PausePressed();
+    }
 
     private void Update()
     {
@@ -40,12 +59,14 @@ public class LevelController : MonoBehaviour
         //Reinitialize the data
         _data = new LevelData("level_" + _id, _numberOfStages, _title, index);
         SaveHandler.Instance.AddSaveableComponent(_data);
+
+        Debug.Log("Initilization Successful:");
     }
 
     // Starts the level
     public void StartLevel(int stage)
     {
-        ControlsManager.Instance.DisableInputMap(ControlsManager.InputMap.gameplay); //change to set to pause later
+        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.pause);
         currentStage = stage;
         levelChanges.LoadStage(stage);
 
@@ -55,7 +76,8 @@ public class LevelController : MonoBehaviour
     // Respawns the player
     public void Respawn(RespawnInfo info)
     {
-        ControlsManager.Instance.DisableInputMap(ControlsManager.InputMap.gameplay); //change to set to pause later
+        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.pause);
+        Debug.Log(_data);
         _data.LogRespawn(currentStage, info);
 
         SpawnPlayer();
@@ -79,7 +101,7 @@ public class LevelController : MonoBehaviour
 
         ResetLevel();
 
-        //Fade in
+        //Fade in (and start the run once the fade is finished)
         if (!AnimationManager.Instance.FadeFromColour(StartRun))
         {
             Debug.LogWarning("Could not start fade in");
@@ -107,18 +129,30 @@ public class LevelController : MonoBehaviour
         levelChanges.LoadStage(currentStage);
     }
 
-    public void PauseLevel()
+    public void PausePressed()
     {
-        Time.timeScale = 0;
-        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.menus);
-        //Open pause menu?
+        if(levelPaused)
+        {
+            //Close pause menu
+
+            Time.timeScale = 1;
+            ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.gameplay, ControlsManager.InputMap.pause);
+            levelPaused = false;
+        }
+        else
+        {
+            Time.timeScale = 0;
+            ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.menus, ControlsManager.InputMap.pause);
+            levelPaused = true;
+
+            //Open pause menu
+        }
     }
 
     public void LevelCompleted()
     {
         Player.Instance.Data.RespawningState = true;
 
-        //Pause level and bring up level completion menu?
         Time.timeScale = 0;
         ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.menus);
 
@@ -129,7 +163,9 @@ public class LevelController : MonoBehaviour
 
     private void OnDestroy()
     {
-
+        //Removes the callbacks from the actions
+        ControlsManager.Instance.RemoveCallBack(ControlsManager.Actions.respawn, RespawnPressedCallback);
+        ControlsManager.Instance.RemoveCallBack(ControlsManager.Actions.pause, PausePressedCallback);
     }
 
     public enum RespawnInfo

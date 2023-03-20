@@ -90,7 +90,9 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
 
             LevelCard[] levelCards = GenerateLevelCards(pageObject.transform, startIndex, endIndex, rows, cardsPerRow);
             _pages[i] = new Page(levelCards, pageObject);
-            _pages[i].Object.transform.parent = transform;
+            //_pages[i].Object.transform.parent = transform;
+            //The code above was giving a warning so I changed it
+            _pages[i].Object.transform.SetParent(transform, false);
             _screenElements.Add(_pages[i].Object);
         }
     }
@@ -125,7 +127,11 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
 
             cardTransform.anchoredPosition = new Vector2(xPos, yPos);
 
-            currentCard.transform.parent = page;
+
+            //currentCard.transform.parent = page;
+            //Above code was previously giving a warning, so I've changed it slightly
+            currentCard.transform.SetParent(page, false);
+
             levelCards[i] = currentCard;
         }
 

@@ -27,7 +27,10 @@ public class MainScreen : MonoBehaviour, IScreen
     #region Button_Methods
     public void OnClick_Start()
     {
-        MenuController.Instance.OpenScreen("LevelSelect");
+        //Temp change to load test level
+        LevelHandler.Instance.LoadLevel(0, 0);
+
+        //MenuController.Instance.OpenScreen("LevelSelect");
     }
 
     public void OnClick_Settings()

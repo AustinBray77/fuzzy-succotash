@@ -9,69 +9,91 @@ using System;
 
 public class ControlsManager : Singleton<ControlsManager>
 {
+    [SerializeField] private InputActionAsset inputActions;
+
     public enum InputMap
     {
         gameplay,
-        menus
+        menus,
+        pause
     }
 
     private readonly Dictionary<InputMap, string> mapNames = new()
     {
         {InputMap.gameplay, "GamePlay" },
-        {InputMap.menus, "Menus" }
+        {InputMap.menus, "Menus" },
+        {InputMap.pause, "PauseMenu" }
     };
 
-    public enum ActionType
-    {
-        xMovement,
-        jump,
-        respawn
-    }
-
-    private Dictionary<ActionType, InputAction> actionTypeToAction;
-
-    [SerializeField] private InputActionAsset inputActions;
-
-    private static InputAction xMovementAction;
-    private static InputAction jumpAction;
-    private static InputAction respawnAction;
-
+    //All actions regardless of InputMap
     public enum Actions
     {
         xMovement,
         jump,
-        respawn
+        respawn,
+        pause
     }
 
     private Dictionary<Actions, InputAction> enumToAction;
 
-    public float XInput { get => xMovementAction.ReadValue<float>(); }
-    public bool Jump { get => jumpAction.IsPressed(); }
+    //Gameplay actions
+    private InputAction xMovementAction;
+    private InputAction jumpAction;
+    private InputAction respawnAction;
+
+        //Values of actions
+        public float XInput { get => xMovementAction.ReadValue<float>(); }
+        public bool Jump { get => jumpAction.IsPressed(); }
+        //add respawn if needed
+
+    //Pause
+    private InputAction pauseAction;
+    
+        //Add pause value return if needed
+
+    //Menus
+
 
     public void Initialize()
     {
-        inputActions.FindActionMap(mapNames[InputMap.gameplay]).Enable();
-
+        //Gameplay
         xMovementAction = inputActions.FindActionMap(mapNames[InputMap.gameplay]).FindAction("X Movement");
         jumpAction = inputActions.FindActionMap(mapNames[InputMap.gameplay]).FindAction("Jump");
         respawnAction = inputActions.FindActionMap(mapNames[InputMap.gameplay]).FindAction("Respawn");
 
+        //Pause
+        pauseAction = inputActions.FindActionMap(mapNames[InputMap.pause]).FindAction("Pause");
+
         enumToAction = new()
         {
+            //Gameplay
             { Actions.xMovement, xMovementAction },
             { Actions.jump, jumpAction },
-            { Actions.respawn, respawnAction }
+            { Actions.respawn, respawnAction },
+
+            //Pause
+            { Actions.pause, pauseAction }
         };
     }
 
     public void AddCallBack(Actions action, Action<InputAction.CallbackContext> callback)
     {
+        //Debug.Log(action);
+        //Debug.Log(enumToAction[action]);
         enumToAction[action].performed += callback;
     }
 
+    public void RemoveCallBack(Actions action, Action<InputAction.CallbackContext> callback)
+    {
+        enumToAction[action].performed -= callback;
+    }
+
+    /// <summary>
+    /// Enables the input maps given and disables all of the other ones
+    /// </summary>
+    /// <param name="newMaps"> input maps to enable</param>
     public void SetInputMaps(params InputMap[] newMaps)
     {
-        //Add code
         foreach (InputMap map in mapNames.Keys)
         {
             if (Array.IndexOf(newMaps, map) != -1)
@@ -90,7 +112,7 @@ public class ControlsManager : Singleton<ControlsManager>
         inputActions.FindActionMap(mapNames[newMap]).Disable();
     }
 
-    public void DiableInput()
+    public void DisableInput()
     {
         //Add code
         foreach (InputMap map in mapNames.Keys)

@@ -16,15 +16,13 @@ public class LevelHandler : Singleton<LevelHandler>
     //Current Level Reference
     public LevelController CurrentLevelController { get; private set; }
 
-    //Adds a callback to the respawn action to respawn the level when pressed
+    //Intializes all of the levels
     public void Initialize()
     {
-        ControlsManager.Instance.AddCallBack(ControlsManager.Actions.respawn, (InputAction.CallbackContext context) => Respawn(LevelController.RespawnInfo.manualRespawn));
-
         for (int i = 0; i < levelReferences.Length; i++)
         {
+            Debug.Log("Initializing level:" + i);
             levelReferences[i].Initialize(i);
-            Debug.Log("Loaded level:" + i);
         }
 
         LevelReferences = new ReadOnlyCollection<LevelController>(levelReferences);
@@ -33,6 +31,7 @@ public class LevelHandler : Singleton<LevelHandler>
     //Function to load levels
     public void LoadLevel(int level, int stage)
     {
+        Player.Instance.SetActive(false);
         //Spawns in the level and saves it
         CurrentLevelController = Instantiate(levelReferences[level].gameObject, Vector3.zero, Quaternion.identity).GetComponent<LevelController>();
 
@@ -40,9 +39,16 @@ public class LevelHandler : Singleton<LevelHandler>
         CurrentLevelController.StartLevel(stage);
     }
 
+    /*
     //Function to Respawn the Level
     public void Respawn(LevelController.RespawnInfo info) =>
         CurrentLevelController.Respawn(info);
+
+    private void PauseLevel()
+    {
+        CurrentLevelController.PausePressed();
+    }    
+    */
 
     //Function to load the next level
     public void NextLevel()
@@ -56,6 +62,8 @@ public class LevelHandler : Singleton<LevelHandler>
     {
         SaveLevelData();
         Destroy(CurrentLevelController.gameObject);
+
+        Player.Instance.SetActive(false);
     }
 
     //Function to Save the Level Data

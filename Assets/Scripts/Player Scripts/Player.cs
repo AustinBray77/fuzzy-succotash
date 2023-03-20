@@ -31,11 +31,17 @@ public class Player : Singleton<Player>
         movement = GetComponent<PlayerMovement>();
         data = GetComponent<PlayerData>();
         tag = PlayerTag;
+        SetActive(false);
     }
 
     public void SetTransform(Transform newTransform)
     {
         //Double check that this is supposed to be world position/rotation and not local
         transform.SetPositionAndRotation(newTransform.position, newTransform.rotation);
+    }
+
+    public void SetActive(bool active)
+    {
+        gameObject.SetActive(active);
     }
 }
