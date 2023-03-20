@@ -34,6 +34,7 @@ public class LevelHandler : Singleton<LevelHandler>
         Player.Instance.SetActive(false);
         //Spawns in the level and saves it
         CurrentLevelController = Instantiate(levelReferences[level].gameObject, Vector3.zero, Quaternion.identity).GetComponent<LevelController>();
+        CurrentLevelController.OnSpawn();
 
         //Starts the level
         CurrentLevelController.StartLevel(stage);
