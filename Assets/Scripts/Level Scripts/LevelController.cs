@@ -66,6 +66,8 @@ public class LevelController : MonoBehaviour
     // Starts the level
     public void StartLevel(int stage)
     {
+        Debug.Log(_data);
+
         ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.pause);
         currentStage = stage;
         levelChanges.LoadStage(stage);
