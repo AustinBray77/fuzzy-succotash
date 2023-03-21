@@ -1932,4 +1932,4 @@ MonoBehaviour:
       - {fileID: 3318609344413405897}
       - {fileID: 7048231813576272691}
       - {fileID: 7375567585686524651}
-  minHeight: -10
+  deathHeight: -10

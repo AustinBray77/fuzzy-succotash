@@ -16,7 +16,7 @@ public class LevelController : MonoBehaviour
     private int _numberOfStages;
     [SerializeField] private string _title;
     [SerializeField] private LevelProgresser levelChanges;
-    [SerializeField] private float minHeight;
+    [SerializeField] private float deathHeight;
 
     private int currentStage = 0;
 
@@ -41,7 +41,7 @@ public class LevelController : MonoBehaviour
 
     private void Update()
     {
-        if (Player.Instance.PlayerPos.y < minHeight && !Player.Instance.Data.RespawningState)
+        if (Player.Instance.PlayerPos.y < deathHeight && !Player.Instance.Data.RespawningState)
         {
             Respawn(RespawnInfo.playerDied);
         }
@@ -51,7 +51,7 @@ public class LevelController : MonoBehaviour
     public void Initialize(int index)
     {
         //Reinitialize the data
-        _data = new LevelData("level_" + _id, _numberOfStages, _title, index);
+        _data = new LevelData("level_" + _id, levelChanges.GetNumberOfStages(), _title, index);
         SaveHandler.Instance.AddSaveableComponent(_data);
     }
 
@@ -72,8 +72,6 @@ public class LevelController : MonoBehaviour
         ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.pause);
         currentStage = stage;
 
-        levelChanges.LoadStage(stage);
-
         SpawnPlayer();
     }
 
@@ -81,7 +79,7 @@ public class LevelController : MonoBehaviour
     public void Respawn(RespawnInfo info)
     {
         ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.pause);
-        Debug.Log(_data);
+        //Debug.Log(_data);
         _data.LogRespawn(currentStage, info);
 
         SpawnPlayer();
@@ -114,6 +112,8 @@ public class LevelController : MonoBehaviour
 
     private void StartRun()
     {
+        //Debug.Log(_data.Attempts[0]);
+        //Debug.Log(currentStage);
         _data.LogAttemptStart(currentStage);
 
         //Turn off invincibility
@@ -169,6 +169,7 @@ public class LevelController : MonoBehaviour
     {
         //Removes the callbacks from the actions
         ControlsManager.Instance.RemoveCallBack(ControlsManager.Actions.respawn, RespawnPressedCallback);
+        ControlsManager.Instance.RemoveCallBack(ControlsManager.Actions.pause, PausePressedCallback);
         ControlsManager.Instance.RemoveCallBack(ControlsManager.Actions.pause, PausePressedCallback);
     }
 
