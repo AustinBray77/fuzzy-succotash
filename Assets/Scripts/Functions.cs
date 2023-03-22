@@ -30,4 +30,16 @@ public class Functions
             gameObject.SetActive(state);
         }
     }
+
+    public static T[] SwapArrayType<T, U>(U[] inputArr) where T : class
+    {
+        T[] outputArr = new T[inputArr.Length];
+
+        for (int i = 0; i < inputArr.Length; i++)
+        {
+            outputArr[i] = inputArr[i] as T;
+        }
+
+        return outputArr;
+    }
 }

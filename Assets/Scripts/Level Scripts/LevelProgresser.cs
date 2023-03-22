@@ -14,10 +14,10 @@ public class LevelProgresser
     [Serializable]
     public struct Stage
     {
-        [SerializeField]/*[RequireInterface(typeof(IToggleableObject))]*/ private MonoBehaviour[] _activations;
-        [SerializeField]/*[RequireInterface(typeof(IToggleableObject))]*/ private MonoBehaviour[] _deactivations;
-        public IToggleableObject[] Activations => (IToggleableObject[])_activations;
-        public IToggleableObject[] Deactivations => (IToggleableObject[])_deactivations;
+        [SerializeField][RequireInterface(typeof(IToggleableObject))] private MonoBehaviour[] _activations;
+        [SerializeField][RequireInterface(typeof(IToggleableObject))] private MonoBehaviour[] _deactivations;
+        public IToggleableObject[] Activations => Functions.SwapArrayType<IToggleableObject, MonoBehaviour>(_activations);
+        public IToggleableObject[] Deactivations => Functions.SwapArrayType<IToggleableObject, MonoBehaviour>(_deactivations);
     }
 
     [SerializeField] private Stage[] stages;
@@ -30,12 +30,6 @@ public class LevelProgresser
 
     private List<IToggleableObject>[] activeObjects;
     private List<IToggleableObject>[] inactiveObjects;
-
-    //Needed for creating the level data
-    public int GetNumberOfStages()
-    {
-        return (stages is null) ? 0 : stages.Length;
-    }
 
     public void Initialize()
     {
