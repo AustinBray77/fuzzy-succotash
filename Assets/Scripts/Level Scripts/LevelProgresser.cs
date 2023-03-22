@@ -26,6 +26,8 @@ public class LevelProgresser
 
     public int NumberOfStages { get => numberOfStages; }
 
+    public int GetNumberOfStagesPreInit() => (stages is null) ? 0 : stages.Length;
+
     private List<IToggleableObject>[] activeObjects;
     private List<IToggleableObject>[] inactiveObjects;
 

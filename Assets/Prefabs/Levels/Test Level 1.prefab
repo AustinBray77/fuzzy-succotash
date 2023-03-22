@@ -1922,6 +1922,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerStartPos: {fileID: 6394710047935401017}
   _id: 1
+  _numberOfStages: 1
   _title: Test
   levelChanges:
     stages:

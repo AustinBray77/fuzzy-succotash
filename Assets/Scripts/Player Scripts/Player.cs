@@ -45,6 +45,13 @@ public class Player : Singleton<Player>
         transform.SetPositionAndRotation(newTransform.position, newTransform.rotation);
     }
 
+    public void Spawn(Transform newTransform)
+    {
+        SetTransform(newTransform);
+        Movement.ResetMovement();
+        SetActive(true);
+    }
+
     public void SetActive(bool active)
     {
         gameObject.SetActive(active);

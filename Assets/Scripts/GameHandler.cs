@@ -13,7 +13,7 @@ public class GameHandler : Singleton<GameHandler>
 
         try
         {
-            SaveHandler.Instance.Load();
+            //SaveHandler.Instance.Load();
         }
         catch (Exception e)
         {
