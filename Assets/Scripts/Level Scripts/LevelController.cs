@@ -51,6 +51,7 @@ public class LevelController : MonoBehaviour
     public void Initialize(int index)
     {
         //Reinitialize the data
+        _numberOfStages = levelChanges.GetNumberOfStagesPreInit();
         _data = new LevelData("level_" + _id, _numberOfStages, _title, index);
         SaveHandler.Instance.AddSaveableComponent(_data);
     }
@@ -61,9 +62,6 @@ public class LevelController : MonoBehaviour
 
         //Set up the level Progressor so that it can easily move through stages later on
         levelChanges.Initialize();
-
-        //Number of stages is calculated based on the serialized fields in the inspector
-        _numberOfStages = levelChanges.NumberOfStages;
     }
 
     // Starts the level
@@ -89,7 +87,6 @@ public class LevelController : MonoBehaviour
 
     private void SpawnPlayer()
     {
-
         Player.Instance.Data.RespawningState = true;
         //Fade out
         if (!AnimationManager.Instance.FadeToColour(Color.black, SpawnPlayerPart2))
@@ -100,8 +97,7 @@ public class LevelController : MonoBehaviour
 
     private void SpawnPlayerPart2()
     {
-        Player.Instance.SetTransform(playerStartPos);
-        Player.Instance.Movement.ResetMovement();
+        Player.Instance.Spawn(playerStartPos);
 
         ResetLevel();
 

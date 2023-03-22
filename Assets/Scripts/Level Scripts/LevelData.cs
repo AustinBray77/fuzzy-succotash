@@ -25,6 +25,8 @@ public class LevelData : ISaveableComponent
 
     public LevelData(string id, int numberOfStages, string title, int index)
     {
+        Debug.Log("Number of stages: " + numberOfStages);
+
         ID = id;
         NumberOfStages = numberOfStages;
         Title = title;
@@ -48,7 +50,7 @@ public class LevelData : ISaveableComponent
     private int[] _completions;
     private double[] _bestTimes;
 
-    public string ID { get ; private set; }
+    public string ID { get; private set; }
     public ReadOnlyCollection<int> Attempts { get; private set; }
     public ReadOnlyCollection<int> Deaths { get; private set; }
     public ReadOnlyCollection<int> Completions { get; private set; }
@@ -80,6 +82,7 @@ public class LevelData : ISaveableComponent
 
     public void LogAttemptStart(int stage)
     {
+        Debug.Log(stage + " " + _attempts.Length);
         _attempts[stage]++;
     }
 
