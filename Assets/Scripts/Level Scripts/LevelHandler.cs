@@ -31,10 +31,13 @@ public class LevelHandler : Singleton<LevelHandler>
     //Function to load levels
     public void LoadLevel(int level, int stage)
     {
-        Player.Instance.SetActive(false);
+        
         //Spawns in the level and saves it
         CurrentLevelController = Instantiate(levelReferences[level].gameObject, Vector3.zero, Quaternion.identity).GetComponent<LevelController>();
         CurrentLevelController.OnSpawn();
+
+        //Enables the player
+        Player.Instance.SetActive(true);
 
         //Starts the level
         CurrentLevelController.StartLevel(stage);

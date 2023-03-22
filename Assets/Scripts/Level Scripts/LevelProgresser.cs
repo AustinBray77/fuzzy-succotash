@@ -14,10 +14,10 @@ public class LevelProgresser
     [Serializable]
     public struct Stage
     {
-        [SerializeField][RequireInterface(typeof(IToggleableObject))] private MonoBehaviour[] _activations;
-        [SerializeField][RequireInterface(typeof(IToggleableObject))] private MonoBehaviour[] _deactivations;
-        public IToggleableObject[] Activations { get => (_activations as IToggleableObject[]) ?? (new IToggleableObject[0]); }
-        public IToggleableObject[] Deactivations { get => (_deactivations as IToggleableObject[]) ?? (new IToggleableObject[0]); }
+        [SerializeField]/*[RequireInterface(typeof(IToggleableObject))]*/ private MonoBehaviour[] _activations;
+        [SerializeField]/*[RequireInterface(typeof(IToggleableObject))]*/ private MonoBehaviour[] _deactivations;
+        public IToggleableObject[] Activations => (IToggleableObject[])_activations;
+        public IToggleableObject[] Deactivations => (IToggleableObject[])_deactivations;
     }
 
     [SerializeField] private Stage[] stages;
@@ -31,11 +31,17 @@ public class LevelProgresser
     private List<IToggleableObject>[] activeObjects;
     private List<IToggleableObject>[] inactiveObjects;
 
+    //Needed for creating the level data
+    public int GetNumberOfStages()
+    {
+        return (stages is null) ? 0 : stages.Length;
+    }
+
     public void Initialize()
     {
         numberOfStages = (stages is null) ? 0 : stages.Length;
         activeObjects = new List<IToggleableObject>[numberOfStages];
-        Debug.Log(activeObjects);
+        Debug.Log("Initializing Level Progresser, Active Objects: " + stages[0].Activations.Length + " Disabled Objects: " + stages[0].Deactivations.Length);
         inactiveObjects = new List<IToggleableObject>[numberOfStages];
 
         for (int i = 0; i < numberOfStages; i++)
@@ -80,7 +86,7 @@ public class LevelProgresser
         }
 
         Debug.Log("Level Progressor Initialized");
-        Debug.Log(activeObjects.Length);
+        //Debug.Log(activeObjects.Length);
     }
 
     public void NextStage(int nextStage)
@@ -90,13 +96,13 @@ public class LevelProgresser
 
     public void LoadStage(int stage)
     {
-        Debug.Log(activeObjects);
-        Debug.Log(numberOfStages);
+        Debug.Log(activeObjects[stage].Count);
         foreach (IToggleableObject obj in activeObjects[stage])
         {
             obj.Activate();
         }
 
+        Debug.Log(inactiveObjects[stage].Count);
         foreach (IToggleableObject obj in inactiveObjects[stage])
         {
             obj.Deactivate();
