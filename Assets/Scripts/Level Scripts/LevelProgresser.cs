@@ -16,6 +16,7 @@ public class LevelProgresser
     {
         [SerializeField][RequireInterface(typeof(IToggleableObject))] private MonoBehaviour[] _activations;
         [SerializeField][RequireInterface(typeof(IToggleableObject))] private MonoBehaviour[] _deactivations;
+        //Find a way to only do this conversion once
         public IToggleableObject[] Activations => Functions.SwapArrayType<IToggleableObject, MonoBehaviour>(_activations);
         public IToggleableObject[] Deactivations => Functions.SwapArrayType<IToggleableObject, MonoBehaviour>(_deactivations);
     }
@@ -34,9 +35,12 @@ public class LevelProgresser
     public void Initialize()
     {
         numberOfStages = (stages is null) ? 0 : stages.Length;
+
         activeObjects = new List<IToggleableObject>[numberOfStages];
-        Debug.Log("Initializing Level Progresser, Active Objects: " + stages[0].Activations.Length + " Disabled Objects: " + stages[0].Deactivations.Length);
         inactiveObjects = new List<IToggleableObject>[numberOfStages];
+
+        Debug.Log("Initializing Level Progresser, Active Objects: " + stages[0].Activations.Length + " Disabled Objects: " + stages[0].Deactivations.Length);
+        
 
         for (int i = 0; i < numberOfStages; i++)
         {

@@ -533,6 +533,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bounceFactor: 1
+  addedForce: 20
 --- !u!1 &3818584073854986905
 GameObject:
   m_ObjectHideFlags: 0
@@ -1070,6 +1071,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bounceFactor: 1
+  addedForce: 0
 --- !u!1 &6296095979201146991
 GameObject:
   m_ObjectHideFlags: 0
@@ -1528,6 +1530,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bounceFactor: 1
+  addedForce: 0
 --- !u!1 &8077209835294777733
 GameObject:
   m_ObjectHideFlags: 0
@@ -1653,6 +1656,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bounceFactor: 1
+  addedForce: 0
 --- !u!1 &8692240938274138028
 GameObject:
   m_ObjectHideFlags: 0
@@ -1922,7 +1926,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerStartPos: {fileID: 6394710047935401017}
   _id: 1
-  _numberOfStages: 1
   _title: Test
   levelChanges:
     stages:

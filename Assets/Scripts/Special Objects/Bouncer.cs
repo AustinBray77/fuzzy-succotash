@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -12,6 +13,7 @@ public class Bouncer : MonoBehaviour, IToggleableObject
     private static readonly string inActiveTag = PlayerMovement.TagFromSurface(PlayerMovement.Surface.ground);
 
     [SerializeField] private float bounceFactor = 1;
+    [SerializeField] private float addedForce = 0;
 
     static Color DisabledColour = Color.gray;
     static Color BouncerColour = Color.yellow;
@@ -43,7 +45,7 @@ public class Bouncer : MonoBehaviour, IToggleableObject
             }
             avgNormal = avgNormal.normalized * -1;
 
-            float force = Mathf.Abs(Vector2.Dot(avgNormal, col.relativeVelocity)) * bounceFactor;
+            float force = (Mathf.Abs(Vector2.Dot(avgNormal, col.relativeVelocity)) * bounceFactor) + addedForce;
 
             col.rigidbody.AddForce(force * avgNormal, ForceMode2D.Impulse);
         }
