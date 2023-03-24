@@ -83,7 +83,7 @@ public class LevelData : ISaveableComponent
 
     public void LogAttemptStart(int stage)
     {
-        Debug.Log(stage + " " + _attempts.Length);
+        //Debug.Log(stage + " " + _attempts.Length);
         _attempts[stage]++;
     }
 

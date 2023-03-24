@@ -62,6 +62,7 @@ public class LevelController : MonoBehaviour
 
         //Set up the level Progressor so that it can easily move through stages later on
         levelChanges.Initialize();
+        _numberOfStages = levelChanges.NumberOfStages;
     }
 
     // Starts the level
@@ -153,19 +154,42 @@ public class LevelController : MonoBehaviour
     {
         Player.Instance.Data.RespawningState = true;
 
-        Time.timeScale = 0;
-        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.menus);
+        //Time.timeScale = 0;
+        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.pause);
 
         double time = Time.timeAsDouble - levelStartTime;
 
         _data.LogLevelCompletion(currentStage, time);
+
+        Debug.Log("Stage completed: " + currentStage);
+        Debug.Log("Number of Stages: " + _numberOfStages);
+
+        //If the last stage was completed
+        if (currentStage >= _numberOfStages - 1)
+        {
+            //Bring up end of level menu
+        }
+        else
+        {
+            NextStage();
+        }
+
+    }
+
+    private void NextStage()
+    {
+        //Add nice animations to show things being activated
+
+        //Temp code for now
+        Debug.Log("Starting next Stage");
+        StartLevel(currentStage + 1);
+        
     }
 
     private void OnDestroy()
     {
         //Removes the callbacks from the actions
         ControlsManager.Instance.RemoveCallBack(ControlsManager.Actions.respawn, RespawnPressedCallback);
-        ControlsManager.Instance.RemoveCallBack(ControlsManager.Actions.pause, PausePressedCallback);
         ControlsManager.Instance.RemoveCallBack(ControlsManager.Actions.pause, PausePressedCallback);
     }
 

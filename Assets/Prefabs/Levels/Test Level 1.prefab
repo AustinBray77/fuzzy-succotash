@@ -111,6 +111,130 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!1 &830711332676574401
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1636109603757840684}
+  - component: {fileID: 6807526944360266366}
+  - component: {fileID: 3371230158667557620}
+  - component: {fileID: 2421831594146220653}
+  m_Layer: 0
+  m_Name: End Trigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1636109603757840684
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 830711332676574401}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 49.5, y: 2, z: 0}
+  m_LocalScale: {x: 1, y: 5, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7930048338326051597}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &6807526944360266366
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 830711332676574401}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
+--- !u!114 &3371230158667557620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 830711332676574401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cb7f7c43160d214ca40ebb85fdbd392, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!212 &2421831594146220653
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 830711332676574401}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 7482667652216324306, guid: b80a69f387737214b881bd67c57f3714, type: 3}
+  m_Color: {r: 0.006752014, g: 0, b: 1, a: 0.36078432}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1 &1570240619360907164
 GameObject:
   m_ObjectHideFlags: 0
@@ -406,7 +530,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7930048338326051597}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2732039002747367279
 GameObject:
@@ -421,7 +545,7 @@ GameObject:
   - component: {fileID: 6879434351610940534}
   - component: {fileID: 7175523183711377323}
   m_Layer: 0
-  m_Name: Square (10)
+  m_Name: Bouncer 0
   m_TagString: Bouncer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -533,7 +657,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bounceFactor: 1
-  addedForce: 20
+  addedForce: 10
 --- !u!1 &3818584073854986905
 GameObject:
   m_ObjectHideFlags: 0
@@ -689,7 +813,7 @@ Transform:
   - {fileID: 2453191100715645212}
   - {fileID: 8229094727739222216}
   m_Father: {fileID: 7930048338326051597}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4892717651318783477
 GameObject:
@@ -830,6 +954,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1636109603757840684}
   - {fileID: 6394710047935401017}
   - {fileID: 5570576142777328363}
   m_Father: {fileID: 7270788854952336690}
@@ -959,7 +1084,7 @@ GameObject:
   - component: {fileID: 386055734294586994}
   - component: {fileID: 3318609344413405897}
   m_Layer: 0
-  m_Name: Square (12)
+  m_Name: Bouncer 2
   m_TagString: Bouncer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1418,7 +1543,7 @@ GameObject:
   - component: {fileID: 4263868890417137290}
   - component: {fileID: 7048231813576272691}
   m_Layer: 0
-  m_Name: Square (13)
+  m_Name: Bouncer 3
   m_TagString: Bouncer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1544,7 +1669,7 @@ GameObject:
   - component: {fileID: 2357545153427700244}
   - component: {fileID: 3706853813508330104}
   m_Layer: 0
-  m_Name: Square (11)
+  m_Name: Bouncer 1
   m_TagString: Bouncer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1655,7 +1780,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59e836c2dedefa7448aa17c682c877c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bounceFactor: 1
+  bounceFactor: 2
   addedForce: 0
 --- !u!1 &8692240938274138028
 GameObject:
@@ -1668,8 +1793,9 @@ GameObject:
   - component: {fileID: 2946798474824146881}
   - component: {fileID: 7784224493286230404}
   - component: {fileID: 2256455366869958223}
+  - component: {fileID: 1025899388424130092}
   m_Layer: 0
-  m_Name: Square (9)
+  m_Name: Charged wall 2
   m_TagString: Charged Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1768,6 +1894,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &1025899388424130092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8692240938274138028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b92dd3b0551716f408e96432adfec143, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8755545443516201708
 GameObject:
   m_ObjectHideFlags: 0
@@ -1779,8 +1917,9 @@ GameObject:
   - component: {fileID: 8012260372839114301}
   - component: {fileID: 5577104603244289420}
   - component: {fileID: 1901888730318287494}
+  - component: {fileID: 877387857573730564}
   m_Layer: 0
-  m_Name: Square (5)
+  m_Name: Charged Wall 1
   m_TagString: Charged Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1879,6 +2018,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &877387857573730564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8755545443516201708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b92dd3b0551716f408e96432adfec143, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8838638226590196348
 GameObject:
   m_ObjectHideFlags: 0
@@ -1936,4 +2087,18 @@ MonoBehaviour:
       - {fileID: 3318609344413405897}
       - {fileID: 7048231813576272691}
       - {fileID: 7375567585686524651}
+      - {fileID: 877387857573730564}
+      - {fileID: 1025899388424130092}
+    - _activations:
+      - {fileID: 3706853813508330104}
+      - {fileID: 3318609344413405897}
+      - {fileID: 7048231813576272691}
+      _deactivations: []
+    - _activations:
+      - {fileID: 877387857573730564}
+      - {fileID: 1025899388424130092}
+      _deactivations: []
+    - _activations:
+      - {fileID: 7375567585686524651}
+      _deactivations: []
   deathHeight: -10

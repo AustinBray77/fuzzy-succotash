@@ -17,8 +17,17 @@ public class LevelProgresser
         [SerializeField][RequireInterface(typeof(IToggleableObject))] private MonoBehaviour[] _activations;
         [SerializeField][RequireInterface(typeof(IToggleableObject))] private MonoBehaviour[] _deactivations;
         //Find a way to only do this conversion once
-        public IToggleableObject[] Activations => Functions.SwapArrayType<IToggleableObject, MonoBehaviour>(_activations);
-        public IToggleableObject[] Deactivations => Functions.SwapArrayType<IToggleableObject, MonoBehaviour>(_deactivations);
+        public IToggleableObject[] Activations { get; private set; }
+        public IToggleableObject[] Deactivations { get; private set; }
+
+        //Once the activations and deactivations are known, a new stage can be created with properly initialized variables
+        public Stage(Stage oldStage)
+        {
+            _activations = oldStage._activations;
+            _deactivations = oldStage._deactivations;
+            Activations = Functions.SwapArrayType<IToggleableObject, MonoBehaviour>(_activations);
+            Deactivations = Functions.SwapArrayType<IToggleableObject, MonoBehaviour>(_deactivations);
+        }
     }
 
     [SerializeField] private Stage[] stages;
@@ -35,6 +44,11 @@ public class LevelProgresser
     public void Initialize()
     {
         numberOfStages = (stages is null) ? 0 : stages.Length;
+
+        for (int i = 0; i < numberOfStages; i++)
+        {
+            stages[i] = new Stage(stages[i]);
+        }
 
         activeObjects = new List<IToggleableObject>[numberOfStages];
         inactiveObjects = new List<IToggleableObject>[numberOfStages];
@@ -87,20 +101,28 @@ public class LevelProgresser
         //Debug.Log(activeObjects.Length);
     }
 
-    public void NextStage(int nextStage)
+    public void NextStage(int newStage)
     {
+        foreach (IToggleableObject obj in stages[newStage].Activations)
+        {
+            obj.Activate();
+        }
 
+        foreach (IToggleableObject obj in stages[newStage].Deactivations)
+        {
+            obj.Deactivate();
+        }
     }
 
     public void LoadStage(int stage)
     {
-        Debug.Log(activeObjects[stage].Count);
+        //Debug.Log(activeObjects[stage].Count);
         foreach (IToggleableObject obj in activeObjects[stage])
         {
             obj.Activate();
         }
 
-        Debug.Log(inactiveObjects[stage].Count);
+        //Debug.Log(inactiveObjects[stage].Count);
         foreach (IToggleableObject obj in inactiveObjects[stage])
         {
             obj.Deactivate();

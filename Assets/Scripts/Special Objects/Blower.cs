@@ -14,7 +14,7 @@ public class Blower : MonoBehaviour, IToggleableObject
     private static readonly string inActiveTag = PlayerMovement.TagFromSurface(PlayerMovement.Surface.ground);
 
     static Color DisabledColour = Color.gray;
-    static Color BlowerColour = Color.blue;
+    static Color BlowerColour = Color.cyan;
 
     private Vector3 forceDirection;
 
