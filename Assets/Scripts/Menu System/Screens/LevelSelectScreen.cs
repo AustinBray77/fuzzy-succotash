@@ -20,8 +20,11 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
 
         public void ReloadCards()
         {
+            Debug.Log($"Cards is Null:{Cards == null}");
+
             foreach (LevelCard card in Cards)
             {
+                Debug.Log("here card");
                 card.ReloadData();
             }
         }
@@ -52,10 +55,10 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
     {
         Functions.SetActiveAllObjects(ScreenElements, true);
 
+        _currentLevelPage = 0;
         ReloadPages();
 
         _pages[0].Object.SetActive(true);
-        _currentLevelPage = 0;
         _previousPageButton.gameObject.SetActive(false);
     }
 
@@ -90,8 +93,6 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
 
             LevelCard[] levelCards = GenerateLevelCards(pageObject.transform, startIndex, endIndex, rows, cardsPerRow);
             _pages[i] = new Page(levelCards, pageObject);
-            //_pages[i].Object.transform.parent = transform;
-            //The code above was giving a warning so I changed it
             _pages[i].Object.transform.SetParent(transform, false);
             _screenElements.Add(_pages[i].Object);
         }
@@ -99,7 +100,7 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
 
     public LevelCard[] GenerateLevelCards(Transform page, int start, int end, int rows, int cardsPerRow)
     {
-        LevelCard[] levelCards = new LevelCard[rows * cardsPerRow];
+        LevelCard[] levelCards = new LevelCard[end - start + 1];
 
         int row = 0, column = 0;
 
@@ -132,7 +133,7 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
             //Above code was previously giving a warning, so I've changed it slightly
             currentCard.transform.SetParent(page, false);
 
-            levelCards[i] = currentCard;
+            levelCards[i - start] = currentCard;
         }
 
         return levelCards;
