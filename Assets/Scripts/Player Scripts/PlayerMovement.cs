@@ -15,10 +15,10 @@ public class PlayerMovement : MonoBehaviour
     public enum Surface
     {
         air,
-        ground,
         chargedGround,
         bouncer,
-        blower
+        blower,
+        ground
     }
 
     public static readonly List<Tuple<string, Surface>> tagToSurface = new List<Tuple<string, Surface>>()
@@ -54,6 +54,9 @@ public class PlayerMovement : MonoBehaviour
     {
         //{Surface.air, new MovementValues (5, 0.005f, 0.5f)},
         //{Surface.ground, new MovementValues (20, 0.01f, 1)}
+        
+        //Update to have default ground movement separate
+        //Add secondary new (creation) function for Movement values that allows you to pass in info, and then modify some value
         {Surface.air,           new MovementValues (10, 0.05f,  7,  7, 0.03f, 1, false)},
         {Surface.ground,        new MovementValues (40, 0.01f, 28, 30, 0.01f, 3, true)},
         {Surface.chargedGround, new MovementValues (40, 0.01f, 28, 30, 0.01f, 3, true)},
@@ -133,7 +136,7 @@ public class PlayerMovement : MonoBehaviour
         if (!ControlsManager.Instance.Jump)
         {
             heldJump = false;
-            //stillTouchingJumpSurface = false;
+            stillTouchingJumpSurface = false;
         }
         //StillTouchingJumpSurface is a safety to prevent jumping, but not leaving the ground, meaning that you could jump an infinite number of time
         //Also I believe you are still touching the ground for one more frame after jumping, so you would jump twice without it
@@ -155,6 +158,10 @@ public class PlayerMovement : MonoBehaviour
                 if (timeAfterJump >= minExtraJumpTime && timeAfterJump <= maxExtraJumpTime)
                 {
                     playerRB.AddForce(extraJumpForce * Time.fixedDeltaTime * jumpDirection, ForceMode2D.Impulse);
+                }
+                else if (timeAfterJump > maxExtraJumpTime)
+                {
+                    stillTouchingJumpSurface = false;
                 }
             }
 

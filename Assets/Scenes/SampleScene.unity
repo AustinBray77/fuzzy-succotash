@@ -184,7 +184,7 @@ MonoBehaviour:
       _deactivations: []
     - _activations: []
       _deactivations: []
-  minHeight: -10
+  deathHeight: 0
 --- !u!1 &235089226
 GameObject:
   m_ObjectHideFlags: 0
@@ -926,7 +926,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 9
+  orthographic size: 12
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1316,6 +1316,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelReferences:
+  - {fileID: 6055657712068799503, guid: e3525e0c8db47f24d934624a35846d8a, type: 3}
   - {fileID: 6055657712068799503, guid: 24cf7f56bb243c74aa77b4e9e53a7704, type: 3}
 --- !u!1 &1167200136
 GameObject:

@@ -22,7 +22,7 @@ public class LevelController : MonoBehaviour
 
     private double levelStartTime;
 
-    private void Start()
+    private void OnEnable()
     {
         //Adds callbacks for the respawn and pause buttons
         ControlsManager.Instance.AddCallBack(ControlsManager.Actions.respawn, RespawnPressedCallback);
@@ -50,6 +50,8 @@ public class LevelController : MonoBehaviour
     //Called when the game loads, called once per run
     public void Initialize(int index)
     {
+        playerStartPos.gameObject.SetActive(false);
+
         //Reinitialize the data
         _numberOfStages = levelChanges.GetNumberOfStagesPreInit();
         _data = new LevelData("level_" + _id, _numberOfStages, _title, index);
@@ -186,7 +188,7 @@ public class LevelController : MonoBehaviour
         
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         //Removes the callbacks from the actions
         ControlsManager.Instance.RemoveCallBack(ControlsManager.Actions.respawn, RespawnPressedCallback);
