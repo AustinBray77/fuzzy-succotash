@@ -28,10 +28,10 @@ public class MainScreen : MonoBehaviour, IScreen
     public void OnClick_Start()
     {
         //Temp change to load test level
-        LevelHandler.Instance.LoadLevel(0, 0);
-        Unload();
+        //LevelHandler.Instance.LoadLevel(0, 0);
+        //Unload();
 
-        //MenuController.Instance.OpenScreen("LevelSelect");
+        MenuController.Instance.OpenScreen("LevelSelect");
     }
 
     public void OnClick_Settings()
