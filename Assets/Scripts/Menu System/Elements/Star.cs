@@ -17,7 +17,7 @@ public class Star : MonoBehaviour
 
     private IEnumerator LoadLevel(int level, int stage)
     {
-        LevelHandler.Instance.LoadLevel(level, stage);
+        LevelHandler.Instance.LoadLevel(level, stage, (float)AnimationManager.Instance.fadeTime); //Create a better way to get the extra time later
         yield return StartCoroutine(MenuController.Instance.OpenScreen("Game"));
     }
 

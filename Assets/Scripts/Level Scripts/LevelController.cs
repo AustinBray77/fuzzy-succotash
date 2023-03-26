@@ -18,6 +18,8 @@ public class LevelController : MonoBehaviour
     [SerializeField] private LevelProgresser levelChanges;
     [SerializeField] private float deathHeight;
 
+    private float waitTimeBeforeStart = 0.25f;
+
     private int currentStage = 0;
 
     private double levelStartTime;
@@ -36,6 +38,7 @@ public class LevelController : MonoBehaviour
 
     private void PausePressedCallback(InputAction.CallbackContext context)
     {
+        Debug.Log("Pause Pressed");
         PausePressed();
     }
 
@@ -68,29 +71,35 @@ public class LevelController : MonoBehaviour
     }
 
     // Starts the level
-    public void StartLevel(int stage)
+    public void StartLevel(int stage, float extraWaitTime = 0)
     {
         ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.pause);
         currentStage = stage;
 
-        SpawnPlayer();
+        StartCoroutine(SpawnPlayer(extraWaitTime));
     }
 
     // Respawns the player
-    public void Respawn(RespawnInfo info)
+    private void Respawn(RespawnInfo info)
     {
         ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.pause);
         //Debug.Log(_data);
         _data.LogRespawn(currentStage, info);
 
-        SpawnPlayer();
+        StartCoroutine(SpawnPlayer());
     }
 
-    private void SpawnPlayer()
+    private IEnumerator SpawnPlayer(float extraWaitTime = 0)
     {
         Player.Instance.Data.RespawningState = true;
         Player.Instance.Spawn(playerStartPos);
         ResetLevel();
+
+        yield return new WaitForSeconds(waitTimeBeforeStart + extraWaitTime); //Maybe change to realtime if timescale is 0
+
+        StartRun();
+        
+        //StartRun();
         //Fade out
         /*if (!AnimationManager.Instance.FadeToColour(Color.black, SpawnPlayerPart2))
         {
@@ -121,7 +130,7 @@ public class LevelController : MonoBehaviour
         Player.Instance.Data.RespawningState = false;
 
         //Enable gameplay inputmap
-        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.gameplay);
+        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.gameplay, ControlsManager.InputMap.pause);
 
         levelStartTime = Time.timeAsDouble;
         Time.timeScale = 1;
@@ -136,6 +145,8 @@ public class LevelController : MonoBehaviour
 
     public void PausePressed()
     {
+
+
         if (levelPaused)
         {
             //Close pause menu
@@ -146,6 +157,8 @@ public class LevelController : MonoBehaviour
         }
         else
         {
+
+
             Time.timeScale = 0;
             ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.menus, ControlsManager.InputMap.pause);
             levelPaused = true;
@@ -186,8 +199,10 @@ public class LevelController : MonoBehaviour
 
         //Temp code for now
         Debug.Log("Starting next Stage");
-        StartLevel(currentStage + 1);
-
+        currentStage++;
+        ResetLevel();
+        levelChanges.NextStage(currentStage);
+        StartCoroutine(SpawnPlayer());
     }
 
     private void OnDisable()

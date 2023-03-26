@@ -10,7 +10,7 @@ public class AnimationManager : Singleton<AnimationManager>
     //private Color fadeToColour;
     private bool transitioning = false;
     private double startTime;
-    private readonly double fadeTime = 0.5;
+    public readonly double fadeTime = 0.3;
 
     // Start is called before the first frame update
     void Start()
