@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -14,15 +15,18 @@ public class Star : MonoBehaviour
 
     private Button _mainButton;
 
+    private IEnumerator LoadLevel(int level, int stage)
+    {
+        LevelHandler.Instance.LoadLevel(level, stage);
+        yield return StartCoroutine(MenuController.Instance.OpenScreen("Game"));
+    }
+
     public void Initialize(int level, int stage)
     {
         _mainButton = GetComponent<Button>();
 
         UnityAction onClick = () =>
-        {
-            MenuController.Instance.OpenScreen("Game");
-            LevelHandler.Instance.LoadLevel(level, stage);
-        };
+            { StartCoroutine(LoadLevel(level, stage)); };
 
         _mainButton.onClick.AddListener(onClick);
     }

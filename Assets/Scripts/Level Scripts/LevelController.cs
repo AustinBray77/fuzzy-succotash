@@ -89,14 +89,16 @@ public class LevelController : MonoBehaviour
     private void SpawnPlayer()
     {
         Player.Instance.Data.RespawningState = true;
+        Player.Instance.Spawn(playerStartPos);
+        ResetLevel();
         //Fade out
-        if (!AnimationManager.Instance.FadeToColour(Color.black, SpawnPlayerPart2))
+        /*if (!AnimationManager.Instance.FadeToColour(Color.black, SpawnPlayerPart2))
         {
             Debug.LogWarning("Could not start fade out");
-        }
+        }*/
     }
 
-    private void SpawnPlayerPart2()
+    /*private void SpawnPlayerPart2()
     {
         Player.Instance.Spawn(playerStartPos);
 
@@ -107,7 +109,7 @@ public class LevelController : MonoBehaviour
         {
             Debug.LogWarning("Could not start fade in");
         }
-    }
+    }*/
 
     private void StartRun()
     {
@@ -185,7 +187,7 @@ public class LevelController : MonoBehaviour
         //Temp code for now
         Debug.Log("Starting next Stage");
         StartLevel(currentStage + 1);
-        
+
     }
 
     private void OnDisable()

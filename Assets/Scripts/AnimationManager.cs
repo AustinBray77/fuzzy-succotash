@@ -45,7 +45,7 @@ public class AnimationManager : Singleton<AnimationManager>
         }
     }
 
-    IEnumerator FadeTo(Color fadeToColour, Action completionCallback)
+    public IEnumerator FadeTo(Color fadeToColour, Action completionCallback = null)
     {
         transitioning = true;
         screen.color = new Color(fadeToColour.r, fadeToColour.g, fadeToColour.b, 0);
@@ -62,10 +62,12 @@ public class AnimationManager : Singleton<AnimationManager>
         screen.color = fadeToColour;
 
         transitioning = false;
-        completionCallback();
+
+        if (completionCallback != null)
+            completionCallback();
     }
 
-    IEnumerator FadeIn(Action completionCallback)
+    public IEnumerator FadeIn(Action completionCallback = null)
     {
         transitioning = true;
         startTime = Time.unscaledTimeAsDouble;
@@ -78,9 +80,11 @@ public class AnimationManager : Singleton<AnimationManager>
             timePassed = Time.unscaledTimeAsDouble - startTime;
         }
 
-        screen.color = screen.color = new Color(screen.color.r, screen.color.g, screen.color.b, 0);
+        screen.color = new Color(screen.color.r, screen.color.g, screen.color.b, 0);
 
         transitioning = false;
-        completionCallback();
+
+        if (completionCallback != null)
+            completionCallback();
     }
 }
