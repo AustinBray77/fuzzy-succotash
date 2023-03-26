@@ -24,7 +24,7 @@ public class MenuController : Singleton<MenuController>
     {
         //Loads the screens to the dictionary
         InitializeScreens();
-        OpenScreen("Main");
+        StartCoroutine(OpenScreen("Main"));
     }
 
     //Loads all screens from the array into the dictionary
@@ -42,9 +42,9 @@ public class MenuController : Singleton<MenuController>
     }
 
     //Method to load a given screen using the name
-    public void OpenScreen(string screenName)
+    public IEnumerator OpenScreen(string screenName, bool fadeIn = true)
     {
-        /*** Add in animation here later ***/
+        yield return StartCoroutine(AnimationManager.Instance.FadeTo(new Color(0, 0, 0)));
 
         if (!string.IsNullOrEmpty(_currentScreenName))
         {
@@ -53,5 +53,10 @@ public class MenuController : Singleton<MenuController>
 
         _currentScreenName = screenName;
         _screenLib[screenName].Load();
+
+        if (fadeIn)
+        {
+            yield return StartCoroutine(AnimationManager.Instance.FadeIn());
+        }
     }
 }
