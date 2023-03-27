@@ -29,8 +29,11 @@ public class LevelHandler : Singleton<LevelHandler>
     }
 
     //Function to load levels
-    public void LoadLevel(int level, int stage)
+    public void LoadLevel(int level, int stage, float waitTimeBeforeStart)
     {
+        //
+        CurrentLevelIndex = level;
+
         
         //Spawns in the level and saves it
         CurrentLevelController = Instantiate(levelReferences[level].gameObject, Vector3.zero, Quaternion.identity).GetComponent<LevelController>();
@@ -40,7 +43,7 @@ public class LevelHandler : Singleton<LevelHandler>
         Player.Instance.SetActive(true);
 
         //Starts the level
-        CurrentLevelController.StartLevel(stage);
+        CurrentLevelController.StartLevel(stage, waitTimeBeforeStart);
     }
 
     /*
@@ -58,7 +61,7 @@ public class LevelHandler : Singleton<LevelHandler>
     public void NextLevel()
     {
         UnloadLevel();
-        LoadLevel(++CurrentLevelIndex, 0);
+        LoadLevel(++CurrentLevelIndex, 0, 0);
     }
 
     //Function to Unload a Level

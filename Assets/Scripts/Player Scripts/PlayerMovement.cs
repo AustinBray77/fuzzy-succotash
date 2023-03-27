@@ -49,6 +49,8 @@ public class PlayerMovement : MonoBehaviour
         return null;
     }
 
+    private static MovementValues groundVals = new MovementValues(40, 0.01f, 28, 30, 0.01f, 3, true);
+
     //Movement Physics Constants
     private readonly Dictionary<Surface, MovementValues> surfaceProperties = new()
     {
@@ -58,10 +60,10 @@ public class PlayerMovement : MonoBehaviour
         //Update to have default ground movement separate
         //Add secondary new (creation) function for Movement values that allows you to pass in info, and then modify some value
         {Surface.air,           new MovementValues (10, 0.05f,  7,  7, 0.03f, 1, false)},
-        {Surface.ground,        new MovementValues (40, 0.01f, 28, 30, 0.01f, 3, true)},
-        {Surface.chargedGround, new MovementValues (40, 0.01f, 28, 30, 0.01f, 3, true)},
-        {Surface.bouncer,       new MovementValues (10, 0.05f,  7,  7, 0.03f, 1, false)},
-        {Surface.blower,        new MovementValues (10, 0.05f,  7,  7, 0.03f, 1, false)}
+        {Surface.ground,        groundVals},
+        {Surface.chargedGround, groundVals},
+        {Surface.bouncer,       groundVals},
+        {Surface.blower,        groundVals}
     };
 
     //Jumping
@@ -266,9 +268,9 @@ public class PlayerMovement : MonoBehaviour
         //If the tag matches a surface type, and that surface is higher in priority than the current highest, then replace the highest priority surface
         Surface? surface = SurfaceFromTag(tag);
 
-        if (surface != null && (int)highestPrioritySurface < (int)(Surface)surface)
+        if (surface is Surface s && (int)highestPrioritySurface < (int)s)
         {
-            highestPrioritySurface = (Surface)surface;
+            highestPrioritySurface = s;
         }
 
         foreach (Tuple<string, Surface> pair in tagToSurface)
@@ -299,6 +301,16 @@ public class PlayerMovement : MonoBehaviour
 
     private readonly struct MovementValues
     {
+        public readonly float maxAccel;
+        public readonly float accelFalloff;
+        public readonly float minAccel;
+
+        public readonly float maxDecel;
+        public readonly float decelFalloff;
+        public readonly float minDecel;
+
+        public readonly bool canJump;
+
         public MovementValues(float maxAccel, float accelFalloff, float minAccel, float maxDecel, float decelFalloff, float minDecel, bool canJump)
         {
             this.maxAccel = maxAccel;
@@ -312,15 +324,20 @@ public class PlayerMovement : MonoBehaviour
             this.canJump = canJump;
         }
 
-        public readonly float maxAccel;
-        public readonly float accelFalloff;
-        public readonly float minAccel;
+        public MovementValues(MovementValues baseValues, float? maxAccel = null, float? accelFalloff = null, float? minAccel = null, float? maxDecel = null, float? decelFalloff = null, float? minDecel = null, bool? canJump = null)
+        {
+            this.maxAccel = maxAccel ?? baseValues.maxAccel;
+            this.accelFalloff = accelFalloff ?? baseValues.accelFalloff;
+            this.minAccel = minAccel ?? baseValues.minAccel;
 
-        public readonly float maxDecel;
-        public readonly float decelFalloff;
-        public readonly float minDecel;
+            this.maxDecel = maxDecel ?? baseValues.maxDecel;
+            this.decelFalloff = decelFalloff ?? baseValues.decelFalloff;
+            this.minDecel = minDecel ?? baseValues.minDecel;
 
-        public readonly bool canJump;
+            this.canJump = canJump ?? baseValues.canJump;
+        }
+
+
     }
 
     float CalculateAcceleration(float velocity, MovementValues values)

@@ -13,11 +13,11 @@ public class MenuController : Singleton<MenuController>
     [Serializable]
     public class UIPrefabs
     {
-        public GameObject LevelCard;
-        public GameObject Star;
+        [SerializeField] public GameObject LevelCard;
+        [SerializeField] public GameObject Star;
     }
 
-    public UIPrefabs Prefabs;
+    [SerializeField] public UIPrefabs Prefabs;
 
     //Method for on start
     public void Initialize()
@@ -30,21 +30,28 @@ public class MenuController : Singleton<MenuController>
     //Loads all screens from the array into the dictionary
     private void InitializeScreens()
     {
-        IScreen[] screens = GetComponentsInChildren<IScreen>();
+        IScreen[] screens = GetComponentsInChildren<IScreen>(true);
 
         //Loops through each screen and adds it to the dictionary with its name as the key and initializes it
         foreach (IScreen screen in screens)
         {
             _screenLib.Add(screen.Name, screen);
+            if(screen is Component component)
+            {
+                component.gameObject.SetActive(true);
+            }
             screen.Initialize();
             screen.Unload();
         }
     }
 
     //Method to load a given screen using the name
-    public IEnumerator OpenScreen(string screenName, bool fadeIn = true)
+    public IEnumerator OpenScreen(string screenName, bool fadeIn = true, bool fadeOut = true)
     {
-        yield return StartCoroutine(AnimationManager.Instance.FadeTo(new Color(0, 0, 0)));
+        if (fadeOut)
+        {
+            yield return StartCoroutine(AnimationManager.Instance.FadeTo(new Color(0, 0, 0)));
+        }
 
         if (!string.IsNullOrEmpty(_currentScreenName))
         {
