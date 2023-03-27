@@ -8,6 +8,7 @@ TagManager:
   - Charged Ground
   - Bouncer
   - Damage
+  - Blower
   layers:
   - Default
   - TransparentFX

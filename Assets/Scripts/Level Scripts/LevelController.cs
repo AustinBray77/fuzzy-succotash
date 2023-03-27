@@ -18,11 +18,14 @@ public class LevelController : MonoBehaviour
     [SerializeField] private LevelProgresser levelChanges;
     [SerializeField] private float deathHeight;
 
-    private float waitTimeBeforeStart = 0.25f;
+    private const float waitTimeBeforeStart = 0.25f;
 
     private int currentStage = 0;
 
     private double levelStartTime;
+    private double lastCompletionTime;
+
+    public double LevelCompletionTime { get => lastCompletionTime; }
 
     private void OnEnable()
     {
@@ -70,6 +73,12 @@ public class LevelController : MonoBehaviour
         _numberOfStages = levelChanges.NumberOfStages;
     }
 
+    public void RestartLevelFromMenu()
+    {
+        Unpause();
+        StartLevel(0);
+    }
+
     // Starts the level
     public void StartLevel(int stage, float extraWaitTime = 0)
     {
@@ -77,6 +86,12 @@ public class LevelController : MonoBehaviour
         currentStage = stage;
 
         StartCoroutine(SpawnPlayer(extraWaitTime));
+    }
+
+    public void RespawnFromMenu()
+    {
+        Unpause();
+        Respawn(RespawnInfo.manualRespawn);
     }
 
     // Respawns the player
@@ -93,6 +108,7 @@ public class LevelController : MonoBehaviour
     {
         Player.Instance.Data.RespawningState = true;
         Player.Instance.Spawn(playerStartPos);
+        Time.timeScale = 1;
         ResetLevel();
 
         yield return new WaitForSeconds(waitTimeBeforeStart + extraWaitTime); //Maybe change to realtime if timescale is 0
@@ -133,6 +149,8 @@ public class LevelController : MonoBehaviour
         ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.gameplay, ControlsManager.InputMap.pause);
 
         levelStartTime = Time.timeAsDouble;
+        
+        //This should be done earlier, otherwise countdown will never finish
         Time.timeScale = 1;
 
         //Tell the timer UI to start
@@ -143,28 +161,40 @@ public class LevelController : MonoBehaviour
         levelChanges.LoadStage(currentStage);
     }
 
-    public void PausePressed()
+    public void UnpauseFromPauseMenu()
     {
+        Unpause();
+    }
 
-
+    private void PausePressed()
+    {
         if (levelPaused)
         {
-            //Close pause menu
-
-            Time.timeScale = 1;
-            ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.gameplay, ControlsManager.InputMap.pause);
-            levelPaused = false;
+            Unpause();
         }
         else
         {
-
-
-            Time.timeScale = 0;
-            ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.menus, ControlsManager.InputMap.pause);
-            levelPaused = true;
-
-            //Open pause menu
+            Pause();
         }
+    }
+
+    private void Unpause()
+    {
+        //Remove this once inputs are added to menus
+        StartCoroutine(MenuController.Instance.OpenScreen("Game", false, false));
+
+        Time.timeScale = 1;
+        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.gameplay, ControlsManager.InputMap.pause);
+        levelPaused = false;
+    }
+
+    private void Pause()
+    {
+        Time.timeScale = 0;
+        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.menus, ControlsManager.InputMap.pause);
+        levelPaused = true;
+
+        StartCoroutine(MenuController.Instance.OpenScreen("PauseMenu", false, false));
     }
 
     public void LevelCompleted()
@@ -174,9 +204,9 @@ public class LevelController : MonoBehaviour
         //Time.timeScale = 0;
         ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.pause);
 
-        double time = Time.timeAsDouble - levelStartTime;
+        lastCompletionTime = Time.timeAsDouble - levelStartTime;
 
-        _data.LogLevelCompletion(currentStage, time);
+        _data.LogLevelCompletion(currentStage, lastCompletionTime);
 
         Debug.Log("Stage completed: " + currentStage);
         Debug.Log("Number of Stages: " + _numberOfStages);
@@ -184,7 +214,7 @@ public class LevelController : MonoBehaviour
         //If the last stage was completed
         if (currentStage >= _numberOfStages - 1)
         {
-            //Bring up end of level menu
+            StartCoroutine(MenuController.Instance.OpenScreen("EndLevelScreen", false, false));
         }
         else
         {

@@ -31,6 +31,9 @@ public class LevelHandler : Singleton<LevelHandler>
     //Function to load levels
     public void LoadLevel(int level, int stage, float waitTimeBeforeStart)
     {
+        //
+        CurrentLevelIndex = level;
+
         
         //Spawns in the level and saves it
         CurrentLevelController = Instantiate(levelReferences[level].gameObject, Vector3.zero, Quaternion.identity).GetComponent<LevelController>();

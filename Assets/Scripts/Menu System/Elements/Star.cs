@@ -25,8 +25,7 @@ public class Star : MonoBehaviour
     {
         _mainButton = GetComponent<Button>();
 
-        UnityAction onClick = () =>
-            { StartCoroutine(LoadLevel(level, stage)); };
+        void onClick() { StartCoroutine(LoadLevel(level, stage)); }
 
         _mainButton.onClick.AddListener(onClick);
     }
