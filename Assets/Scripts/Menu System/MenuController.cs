@@ -13,11 +13,11 @@ public class MenuController : Singleton<MenuController>
     [Serializable]
     public class UIPrefabs
     {
-        public GameObject LevelCard;
-        public GameObject Star;
+        [SerializeField] public GameObject LevelCard;
+        [SerializeField] public GameObject Star;
     }
 
-    public UIPrefabs Prefabs;
+    [SerializeField] public UIPrefabs Prefabs;
 
     //Method for on start
     public void Initialize()
