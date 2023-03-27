@@ -112,6 +112,7 @@ public class LevelController : MonoBehaviour
         ResetLevel();
 
         yield return new WaitForSeconds(waitTimeBeforeStart + extraWaitTime); //Maybe change to realtime if timescale is 0
+        yield return new WaitForFixedUpdate(); //If you do not wait for a fixed update, there is variation in the start time relative to the next fixed update, adding randomness to the finish time
 
         StartRun();
         

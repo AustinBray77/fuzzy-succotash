@@ -1296,7 +1296,7 @@ Transform:
   m_GameObject: {fileID: 438235687}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1862,7 +1862,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 53.7
+  m_fontSize: 72
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2978,6 +2978,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelReferences:
+  - {fileID: 4244498509716780663, guid: 1ab23a30c9c920a4490abc3f60352456, type: 3}
   - {fileID: 6055657712068799503, guid: 24cf7f56bb243c74aa77b4e9e53a7704, type: 3}
   - {fileID: 6055657712068799503, guid: e3525e0c8db47f24d934624a35846d8a, type: 3}
 --- !u!1 &1093010345
