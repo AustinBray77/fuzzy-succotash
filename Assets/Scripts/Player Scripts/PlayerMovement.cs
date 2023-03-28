@@ -77,21 +77,21 @@ public class PlayerMovement : MonoBehaviour
 
     //Should these be specific to surfaces?
     private double minExtraJumpTime = 0.1; //Time after jump when extra jump force starts applying 
-    private double maxExtraJumpTime = 0.5; //Time after jump when extra jump force stops applying
-    private float extraJumpForce = 14f; //per second
+    private double maxExtraJumpTime = 0.4; //Time after jump when extra jump force stops applying
+    private float extraJumpForce = 17f; //per second
 
     private Surface highestPrioritySurface = Surface.air;
     private Rigidbody2D playerRB;
     private Vector2 totalContactNormals = Vector3.zero;
 
-    private Vector2 gravity = new Vector2(0, -14);
+    private float gravityScale = 1.5f;
 
     // Start is called before the first frame update
     public void Initialize()
     {
         playerRB = GetComponent<Rigidbody2D>();
         Time.fixedDeltaTime = (float)1 / 100; //100 fps
-        Physics2D.gravity = gravity;
+        playerRB.gravityScale = gravityScale;
 
         ResetMovement();
     }
@@ -129,7 +129,7 @@ public class PlayerMovement : MonoBehaviour
             playerRB.AddForce(new Vector2(playerVelocityDirection * -1 * decel * Time.fixedDeltaTime, 0), ForceMode2D.Impulse);
         }
 
-        //Debug.Log("Accel: " + accel + " Decel: " + decel + " Net: " + (accel * Mathf.Sign(XInput) - decel * playerVelocityDirection));
+        //Debug.Log("Accel: " + accel + " Decel: " + decel + " Net: " + (accel * Mathf.Sign(XInput) - decel * playerVelocityDirection) + " Velocity: " + playerRB.velocity.magnitude);
 
         //Debug.Log(ControlsManager.Instance.Jump);
 
@@ -137,8 +137,14 @@ public class PlayerMovement : MonoBehaviour
 
         if (!ControlsManager.Instance.Jump)
         {
+            if(heldJump)
+            {
+                Debug.Log("Time Jump Key Held: " + (Time.timeAsDouble - jumpTime));
+            }
+
             heldJump = false;
             stillTouchingJumpSurface = false;
+
         }
         //StillTouchingJumpSurface is a safety to prevent jumping, but not leaving the ground, meaning that you could jump an infinite number of time
         //Also I believe you are still touching the ground for one more frame after jumping, so you would jump twice without it
