@@ -49,7 +49,7 @@ public class PlayerMovement : MonoBehaviour
         return null;
     }
 
-    private static MovementValues groundVals = new MovementValues(25, 8, 12, 16, 15f, 0.01f, 3, 0.5f, true);
+    private static MovementValues groundVals = new MovementValues(40, 8, 12, 30, 29, 0.05f, 5, 0.5f, true);
     private static MovementValues airVals = new MovementValues(7, 5, 8, 6, 6, 0.05f, 1, 0.5f, false);
 
     //Movement Physics Constants
@@ -117,12 +117,27 @@ public class PlayerMovement : MonoBehaviour
         float decelX = CalculateDeceleration(Mathf.Abs(playerRB.velocity.x), surfaceProperties[highestPrioritySurface], false);
         float decelY = CalculateDeceleration(Mathf.Abs(playerRB.velocity.y), surfaceProperties[highestPrioritySurface], true);
 
+        //If the deceleration would push the player in the opposite direction
         //If over current velocity, make it equal to current velocity, otherwise make it the same value, but in the opposite direction of the velocity
-        decelX = (decelX >= Mathf.Abs(playerRB.velocity.x)) ? (playerRB.velocity.x * -1) : decelX * -1 * Mathf.Sign(playerRB.velocity.x);
-        decelY = (decelY >= Mathf.Abs(playerRB.velocity.y)) ? (playerRB.velocity.y * -1) : decelY * -1 * Mathf.Sign(playerRB.velocity.y);
+        
+        decelX *= -1 * Mathf.Sign(playerRB.velocity.x) * Time.fixedDeltaTime;
+        if(Mathf.Abs(decelX) >= Mathf.Abs(playerRB.velocity.x))
+        {
+            decelX = playerRB.velocity.x * -1;
+        }
+
+        decelY *= -1 * Mathf.Sign(playerRB.velocity.y) * Time.fixedDeltaTime;
+        if (Mathf.Abs(decelY) >= Mathf.Abs(playerRB.velocity.y))
+        {
+            decelY = playerRB.velocity.y * -1;
+        }
+
+        //decelX = (decelX >= Mathf.Abs(playerRB.velocity.x) * Time.fixedDeltaTime) ? (playerRB.velocity.x * -1) : decelX * -1 * Mathf.Sign(playerRB.velocity.x);
+        //decelY = (decelY >= Mathf.Abs(playerRB.velocity.y) * Time.fixedDeltaTime) ? (playerRB.velocity.y * -1) : decelY * -1 * Mathf.Sign(playerRB.velocity.y);
 
         //Applies the deceleration force
-        playerRB.AddForce(new Vector2(decelX, decelY) * Time.fixedDeltaTime, ForceMode2D.Impulse);
+        Debug.Log(new Vector2(decelX, decelY));
+        playerRB.AddForce(new Vector2(decelX, decelY), ForceMode2D.Impulse);
         
         /*
         Vector2 decelDirection = playerRB.velocity.normalized * -1;
