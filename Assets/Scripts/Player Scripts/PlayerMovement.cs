@@ -49,17 +49,13 @@ public class PlayerMovement : MonoBehaviour
         return null;
     }
 
-    private static MovementValues groundVals = new MovementValues(40, 0.01f, 28, 30, 0.01f, 3, true);
+    private static MovementValues groundVals = new MovementValues(25, 8, 12, 16, 15f, 0.01f, 3, 0.5f, true);
+    private static MovementValues airVals = new MovementValues(7, 5, 8, 6, 6, 0.05f, 1, 0.5f, false);
 
     //Movement Physics Constants
     private readonly Dictionary<Surface, MovementValues> surfaceProperties = new()
     {
-        //{Surface.air, new MovementValues (5, 0.005f, 0.5f)},
-        //{Surface.ground, new MovementValues (20, 0.01f, 1)}
-        
-        //Update to have default ground movement separate
-        //Add secondary new (creation) function for Movement values that allows you to pass in info, and then modify some value
-        {Surface.air,           new MovementValues (10, 0.05f,  7,  7, 0.03f, 1, false)},
+        {Surface.air,           airVals   },
         {Surface.ground,        groundVals},
         {Surface.chargedGround, groundVals},
         {Surface.bouncer,       groundVals},
@@ -67,7 +63,7 @@ public class PlayerMovement : MonoBehaviour
     };
 
     //Jumping
-    private readonly float jumpForce = 8f; //change to const later? (or maybe the value will be modifiable?)
+    private readonly float jumpForce = 10f; //change to const later? (or maybe the value will be modifiable?)
     private readonly Vector2 jumpBias = new Vector2(0, 0.03f);
     private bool stillTouchingJumpSurface = false;
     private double jumpTime = 0;
@@ -78,13 +74,13 @@ public class PlayerMovement : MonoBehaviour
     //Should these be specific to surfaces?
     private double minExtraJumpTime = 0.1; //Time after jump when extra jump force starts applying 
     private double maxExtraJumpTime = 0.4; //Time after jump when extra jump force stops applying
-    private float extraJumpForce = 17f; //per second
+    private float extraJumpForce = 20f; //per second
 
     private Surface highestPrioritySurface = Surface.air;
     private Rigidbody2D playerRB;
     private Vector2 totalContactNormals = Vector3.zero;
 
-    private float gravityScale = 1.5f;
+    private float gravityScale = 2f;
 
     // Start is called before the first frame update
     public void Initialize()
@@ -103,38 +99,52 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        //Acceleration
+    
+        //ACCLERATION
         float XInput = ControlsManager.Instance.XInput;
-        //Debug.Log(XInput);
         float accel = 0;
         if (XInput != 0)
         {
             float inputDirection = Mathf.Sign(XInput);
-            //Velocity relative to the direction of input                      
+            //Pass in velocity relative to the direction of input                      
             accel = CalculateAcceleration(playerRB.velocity.x * inputDirection, surfaceProperties[highestPrioritySurface]);
             playerRB.AddForce(new Vector2(XInput * accel * Time.fixedDeltaTime, 0), ForceMode2D.Impulse);
         }
 
-        //Decleration
-        float playerVelocityDirection = Mathf.Sign(playerRB.velocity.x);
-        float decel = CalculateDeceleration(Mathf.Abs(playerRB.velocity.x), surfaceProperties[highestPrioritySurface]);
+        //DECELERATION
+        
+        //Update decel function in the future to return negative values if given a negative speed?
+        float decelX = CalculateDeceleration(Mathf.Abs(playerRB.velocity.x), surfaceProperties[highestPrioritySurface], false);
+        float decelY = CalculateDeceleration(Mathf.Abs(playerRB.velocity.y), surfaceProperties[highestPrioritySurface], true);
+
+        //If over current velocity, make it equal to current velocity, otherwise make it the same value, but in the opposite direction of the velocity
+        decelX = (decelX >= Mathf.Abs(playerRB.velocity.x)) ? (playerRB.velocity.x * -1) : decelX * -1 * Mathf.Sign(playerRB.velocity.x);
+        decelY = (decelY >= Mathf.Abs(playerRB.velocity.y)) ? (playerRB.velocity.y * -1) : decelY * -1 * Mathf.Sign(playerRB.velocity.y);
+
+        //Applies the deceleration force
+        playerRB.AddForce(new Vector2(decelX, decelY) * Time.fixedDeltaTime, ForceMode2D.Impulse);
+        
+        /*
+        Vector2 decelDirection = playerRB.velocity.normalized * -1;
+
+        float decel = CalculateDeceleration(playerRB.velocity.magnitude, surfaceProperties[highestPrioritySurface]);
 
         //if the deceleration is greater than velocity, then add a force which will bring velocity to zero
-        if (decel * Time.fixedDeltaTime >= Mathf.Abs(playerRB.velocity.x))
+        if (decel * Time.fixedDeltaTime >= playerRB.velocity.magnitude)
         {
-            playerRB.AddForce(new Vector2(-1 * playerRB.velocity.x, 0), ForceMode2D.Impulse);
+            playerRB.AddForce(-1 * playerRB.velocity, ForceMode2D.Impulse);
         }
         else
         {
-            playerRB.AddForce(new Vector2(playerVelocityDirection * -1 * decel * Time.fixedDeltaTime, 0), ForceMode2D.Impulse);
+            //Applies the deceleration force in the opposite direction of the players velocity
+            playerRB.AddForce(decel * Time.fixedDeltaTime * -1 * playerRB.velocity.normalized, ForceMode2D.Impulse);
         }
+        */
 
         //Debug.Log("Accel: " + accel + " Decel: " + decel + " Net: " + (accel * Mathf.Sign(XInput) - decel * playerVelocityDirection) + " Velocity: " + playerRB.velocity.magnitude);
-
         //Debug.Log(ControlsManager.Instance.Jump);
 
-        //Jumping
-
+        //JUMPING
         if (!ControlsManager.Instance.Jump)
         {
             if(heldJump)
@@ -174,8 +184,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
             //If holding jump and able to jump then jump
-            /*else*/
-            if (surfaceProperties[highestPrioritySurface].canJump && !stillTouchingJumpSurface)
+            else if (surfaceProperties[highestPrioritySurface].canJump && !stillTouchingJumpSurface)
             {
                 jumpDirection = (totalContactNormals.normalized + jumpBias).normalized;
                 Vector2 force = jumpDirection * jumpForce;
@@ -307,45 +316,44 @@ public class PlayerMovement : MonoBehaviour
 
     private readonly struct MovementValues
     {
-        public readonly float maxAccel;
-        public readonly float accelFalloff;
-        public readonly float minAccel;
+        public readonly float maxAccel, maxAccelEnd, minAccelStart, minAccel;
 
-        public readonly float maxDecel;
-        public readonly float decelFalloff;
-        public readonly float minDecel;
+        public readonly float maxDecel, decelFalloff, minDecel, verticalDecelMultiplier;
 
         public readonly bool canJump;
 
-        public MovementValues(float maxAccel, float accelFalloff, float minAccel, float maxDecel, float decelFalloff, float minDecel, bool canJump)
+        public MovementValues(float maxAccel, float maxAccelEnd, float minAccelStart, float minAccel, float maxDecel, float decelFalloff, float minDecel, float verticalDecelMultiplier, bool canJump)
         {
             this.maxAccel = maxAccel;
-            this.accelFalloff = accelFalloff;
+            this.maxAccelEnd = maxAccelEnd;
+            this.minAccelStart = minAccelStart;
             this.minAccel = minAccel;
 
             this.maxDecel = maxDecel;
             this.decelFalloff = decelFalloff;
             this.minDecel = minDecel;
+            this.verticalDecelMultiplier = verticalDecelMultiplier;
 
             this.canJump = canJump;
         }
 
-        public MovementValues(MovementValues baseValues, float? maxAccel = null, float? accelFalloff = null, float? minAccel = null, float? maxDecel = null, float? decelFalloff = null, float? minDecel = null, bool? canJump = null)
+        public MovementValues(MovementValues baseValues, float? maxAccel, float? maxAccelEnd = null, float? minAccelStart = null, float? minAccel = null, float? maxDecel = null, float? decelFalloff = null, float? minDecel = null, float? verticalDecelMultiplier = null, bool? canJump = null)
         {
             this.maxAccel = maxAccel ?? baseValues.maxAccel;
-            this.accelFalloff = accelFalloff ?? baseValues.accelFalloff;
+            this.maxAccelEnd = maxAccelEnd ?? baseValues.maxAccelEnd;
+            this.minAccelStart = minAccelStart ?? baseValues.minAccelStart;
             this.minAccel = minAccel ?? baseValues.minAccel;
 
             this.maxDecel = maxDecel ?? baseValues.maxDecel;
             this.decelFalloff = decelFalloff ?? baseValues.decelFalloff;
             this.minDecel = minDecel ?? baseValues.minDecel;
+            this.verticalDecelMultiplier = verticalDecelMultiplier ?? baseValues.verticalDecelMultiplier;
 
             this.canJump = canJump ?? baseValues.canJump;
         }
-
-
     }
 
+    /*
     float CalculateAcceleration(float velocity, MovementValues values)
     {
         //Desmos for acceleration: https://www.desmos.com/calculator/emgmts7fzm
@@ -368,8 +376,35 @@ public class PlayerMovement : MonoBehaviour
 
         return accel;
     }
+    */
 
-    float CalculateDeceleration(float velocity, MovementValues values)
+    float CalculateAcceleration(float velocity, MovementValues values)
+    {
+        //Desmos for acceleration: https://www.desmos.com/calculator/gcuhlaobxk
+        float accel;
+
+        if (velocity <= values.maxAccelEnd)
+        {
+            accel = values.maxAccel;
+        }
+        else if (velocity < values.minAccelStart)
+        {
+            float maxA = values.maxAccel;
+            float minA = values.minAccel;
+            float x1 = values.maxAccelEnd;
+            float x2 = values.minAccelStart;
+
+            accel = ( (maxA - minA) / 2 * Mathf.Cos(Mathf.PI * (velocity - x1) / (x2 - x1)) ) + ((maxA + minA) / 2);
+        }
+        else
+        {
+            accel = values.minAccel;
+        }
+
+        return accel;
+    }
+
+    float CalculateDeceleration(float velocity, MovementValues values, bool yDecel)
     {
         //Desmos for Decel: https://www.desmos.com/calculator/yd6t9wniem
 
@@ -389,7 +424,7 @@ public class PlayerMovement : MonoBehaviour
             decel = (-1 / ((values.decelFalloff * velocity) + (1 / (values.maxDecel - values.minDecel)))) + values.maxDecel;
         }
 
-        return decel;
+        return (yDecel) ? (decel * values.verticalDecelMultiplier) : (decel);
 
     }
 }

@@ -45,6 +45,7 @@ public class Bouncer : MonoBehaviour, IToggleableObject
             }
             avgNormal = avgNormal.normalized * -1;
 
+            //Vector2.Dot gives the magnitude of the velocity in the direction of the average normal
             float force = (Mathf.Abs(Vector2.Dot(avgNormal, col.relativeVelocity)) * bounceFactor) + addedForce;
 
             col.rigidbody.AddForce(force * avgNormal, ForceMode2D.Impulse);

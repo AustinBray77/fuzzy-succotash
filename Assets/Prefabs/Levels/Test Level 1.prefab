@@ -497,8 +497,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd02de06915e0d441819973b6e245ab9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxForce: 20
-  minForce: 10
+  maxForce: 30
+  minForce: 20
   maxDistance: 32
   angleOnUnitCircle: 90
 --- !u!1 &2361847125603672415
