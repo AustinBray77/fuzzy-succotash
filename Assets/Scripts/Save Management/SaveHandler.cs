@@ -6,7 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public class SaveHandler : Singleton<SaveHandler>
 {
-    private string _saveFilePath; 
+    private string _saveFilePath;
     private readonly string _test_file_path = "C:/";
 
     public void Initialize()
@@ -79,6 +79,7 @@ public class SaveHandler : Singleton<SaveHandler>
             {
                 //Logs the error if there is one
                 Debug.LogError(e.Message);
+                saveFileStream.Close();
             }
         }
 

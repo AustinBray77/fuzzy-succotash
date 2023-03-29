@@ -153,6 +153,8 @@ GameObject:
   - component: {fileID: 4244498509896803483}
   - component: {fileID: 4244498509896803480}
   - component: {fileID: 4244498509896803482}
+  - component: {fileID: 8851175009767878732}
+  - component: {fileID: 769264534759675728}
   m_Layer: 0
   m_Name: Main Tilemap
   m_TagString: Ground
@@ -2118,10 +2120,151 @@ TilemapCollider2D:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0
+--- !u!50 &8851175009767878732
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4244498509896803487}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 7
+--- !u!66 &769264534759675728
+CompositeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4244498509896803487}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_GeometryType: 0
+  m_GenerationType: 0
+  m_EdgeRadius: 0
+  m_ColliderPaths:
+  - m_Collider: {fileID: 4244498509896803482}
+    m_ColliderPaths:
+    - - X: 250000000
+        Y: 20000000
+      - X: 310000000
+        Y: 20000000
+      - X: 310000000
+        Y: 60000000
+      - X: 530000000
+        Y: 60000000
+      - X: 530000000
+        Y: 150000000
+      - X: -20000000
+        Y: 150000000
+      - X: -20000000
+        Y: -20000000
+      - X: 250000000
+        Y: -20000000
+    - - X: -10000000
+        Y: -10000000
+      - X: -10000000
+        Y: 140000000
+      - X: 520000000
+        Y: 140000000
+      - X: 520000000
+        Y: 70000000
+      - X: 300000000
+        Y: 70000000
+      - X: 300000000
+        Y: 30000000
+      - X: 240000000
+        Y: 30000000
+      - X: 240000000
+        Y: -10000000
+    - - X: 490000000
+        Y: 100000000
+      - X: 300000000
+        Y: 100000000
+      - X: 300000000
+        Y: 90000000
+      - X: 490000000
+        Y: 90000000
+    - - X: 70000000
+        Y: 70000000
+      - X: 40000000
+        Y: 70000000
+      - X: 40000000
+        Y: 20000000
+      - X: 70000000
+        Y: 20000000
+    - - X: 200000000
+        Y: 40000000
+      - X: 170000000
+        Y: 40000000
+      - X: 170000000
+        Y: 30000000
+      - X: 200000000
+        Y: 30000000
+    - - X: 140000000
+        Y: 20000000
+      - X: 90000000
+        Y: 20000000
+      - X: 90000000
+        Y: 10000000
+      - X: 140000000
+        Y: 10000000
+  m_CompositePaths:
+    m_Paths:
+    - - {x: 24.999971, y: -2}
+      - {x: 25.000029, y: 2}
+      - {x: 31, y: 2.0000293}
+      - {x: 31.000029, y: 6}
+      - {x: 53, y: 6.000029}
+      - {x: 52.999973, y: 15}
+      - {x: -2, y: 14.999971}
+      - {x: -1.9999708, y: -2}
+    - - {x: 24, y: -0.9999706}
+      - {x: -1, y: -0.9999706}
+      - {x: -0.9999706, y: 14}
+      - {x: 52, y: 13.999971}
+      - {x: 51.999973, y: 7}
+      - {x: 30, y: 6.9999704}
+      - {x: 29.999971, y: 3}
+      - {x: 24, y: 2.999971}
+    - - {x: 48.999973, y: 9}
+      - {x: 48.999973, y: 10}
+      - {x: 30, y: 9.99997}
+      - {x: 30.000029, y: 9}
+    - - {x: 6.9999704, y: 2}
+      - {x: 6.9999704, y: 7}
+      - {x: 4, y: 6.9999704}
+      - {x: 4.000029, y: 2}
+    - - {x: 19.999971, y: 3}
+      - {x: 19.999971, y: 4}
+      - {x: 17, y: 3.999971}
+      - {x: 17.000029, y: 3}
+    - - {x: 13.999971, y: 1}
+      - {x: 13.999971, y: 2}
+      - {x: 9, y: 1.9999708}
+      - {x: 9.00003, y: 1}
+  m_VertexDistance: 0.0005
+  m_OffsetDistance: 0.00005
 --- !u!1 &4244498510086021624
 GameObject:
   m_ObjectHideFlags: 0
