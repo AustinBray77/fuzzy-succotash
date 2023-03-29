@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 public class MenuController : Singleton<MenuController>
@@ -18,6 +19,7 @@ public class MenuController : Singleton<MenuController>
     }
 
     [SerializeField] public UIPrefabs Prefabs;
+    [SerializeField] private InputSystemUIInputModule _inputSystem;
 
     //Method for on start
     public void Initialize()
@@ -36,7 +38,7 @@ public class MenuController : Singleton<MenuController>
         foreach (IScreen screen in screens)
         {
             _screenLib.Add(screen.Name, screen);
-            if(screen is Component component)
+            if (screen is Component component)
             {
                 component.gameObject.SetActive(true);
             }
@@ -48,6 +50,9 @@ public class MenuController : Singleton<MenuController>
     //Method to load a given screen using the name
     public IEnumerator OpenScreen(string screenName, bool fadeIn = true, bool fadeOut = true)
     {
+        _inputSystem.enabled = false;
+        ControlsManager.Instance.DisableInput();
+
         if (fadeOut)
         {
             yield return StartCoroutine(AnimationManager.Instance.FadeTo(new Color(0, 0, 0)));
@@ -65,5 +70,8 @@ public class MenuController : Singleton<MenuController>
         {
             yield return StartCoroutine(AnimationManager.Instance.FadeIn());
         }
+
+        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.menus);
+        _inputSystem.enabled = true;
     }
 }

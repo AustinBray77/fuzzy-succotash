@@ -1872,7 +1872,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 42.95
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2988,8 +2988,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelReferences:
-  - {fileID: 4244498509716780663, guid: 1ab23a30c9c920a4490abc3f60352456, type: 3}
   - {fileID: 4244498509716780663, guid: 21297ee43b479de4782eee514f2c96cd, type: 3}
+  - {fileID: 4244498509716780663, guid: 1ab23a30c9c920a4490abc3f60352456, type: 3}
   - {fileID: 6055657712068799503, guid: 24cf7f56bb243c74aa77b4e9e53a7704, type: 3}
   - {fileID: 6055657712068799503, guid: e3525e0c8db47f24d934624a35846d8a, type: 3}
 --- !u!1 &1093010345
@@ -3296,6 +3296,7 @@ MonoBehaviour:
   Prefabs:
     LevelCard: {fileID: 1776910097228935615, guid: cadb01b2a95bd2c488e443eb3686fd71, type: 3}
     Star: {fileID: 530309896864428145, guid: ac9785291bb5f4d4c908ae603e544755, type: 3}
+  _inputSystem: {fileID: 1884863957}
 --- !u!114 &1221705531
 MonoBehaviour:
   m_ObjectHideFlags: 0
