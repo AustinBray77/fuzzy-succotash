@@ -70,9 +70,9 @@
                 {
                     "name": "",
                     "id": "71b12682-f3b1-4b14-85fa-73e939505d84",
-                    "path": "<Joystick>/stick/x",
+                    "path": "<Gamepad>/leftStick/x",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "AxisDeadzone",
                     "groups": "",
                     "action": "X Movement",
                     "isComposite": false,
@@ -165,6 +165,17 @@
                     "action": "Respawn",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "047ac4f5-4e72-46fa-af1c-6e60d1c11e8e",
+                    "path": "<DualShockGamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Respawn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -215,6 +226,17 @@
                     "name": "",
                     "id": "455f9701-424a-43d8-8553-fefa0a542442",
                     "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "511016f1-a33b-4287-8b53-a4765512f830",
+                    "path": "<DualShockGamepad>/start",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
