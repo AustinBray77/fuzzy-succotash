@@ -11,6 +11,7 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
+    #region Enums and Related Variables & Functions
     //In order of priority (if touching multiple, a higher number will take precendence)
     public enum Surface
     {
@@ -48,7 +49,9 @@ public class PlayerMovement : MonoBehaviour
         }
         return null;
     }
+    #endregion
 
+    #region Variables
     private static MovementValues groundVals = new MovementValues(40, 8, 12, 30, 29, 0.05f, 5, 0.5f, true);
     private static MovementValues airVals = new MovementValues(7, 5, 8, 6, 6, 0.05f, 1, 0.5f, false);
 
@@ -63,43 +66,46 @@ public class PlayerMovement : MonoBehaviour
     };
 
     //Jumping
-    private readonly float jumpForce = 10f; //change to const later? (or maybe the value will be modifiable?)
-    private readonly Vector2 jumpBias = new Vector2(0, 0.03f);
-    private bool stillTouchingJumpSurface = false;
-    private double jumpTime = 0;
-    private bool heldJump = false;
+    private const float jumpForce = 10f;
+    private readonly Vector2 jumpBias = new Vector2(0, 0.5f);
+
     private Vector2 jumpDirection = Vector2.zero;
     private List<Tuple<Collider2D, Vector2>> savedChargedForces = new();
+    
+    private double jumpTime = 0;
+    private bool heldJump = false;
+    private bool jumpedLastFrame = false;
 
     //Should these be specific to surfaces?
-    private double minExtraJumpTime = 0.1; //Time after jump when extra jump force starts applying 
+    private double minExtraJumpTime = 0.08; //Time after jump when extra jump force starts applying 
     private double maxExtraJumpTime = 0.4; //Time after jump when extra jump force stops applying
     private float extraJumpForce = 20f; //per second
 
     private Surface highestPrioritySurface = Surface.air;
     private Rigidbody2D playerRB;
-    private Vector2 totalContactNormals = Vector3.zero;
+    private List<Vector2> contactNormals = new();
 
     private float gravityScale = 2f;
+    #endregion
 
-    // Start is called before the first frame update
     public void Initialize()
     {
         playerRB = GetComponent<Rigidbody2D>();
-        Time.fixedDeltaTime = (float)1 / 100; //100 fps
+        Time.fixedDeltaTime = (float) 1 / 100; //100 fps
         playerRB.gravityScale = gravityScale;
 
         ResetMovement();
     }
 
-    public void SetKinematic(bool isKinematic)
-    {
-        playerRB.isKinematic = isKinematic;
-    }
-
     void FixedUpdate()
     {
-    
+        if(jumpedLastFrame)
+        {
+            highestPrioritySurface = Surface.air;
+            jumpedLastFrame = false;
+        }
+
+        #region Acceleration
         //ACCLERATION
         float XInput = ControlsManager.Instance.XInput;
         float accel = 0;
@@ -110,16 +116,16 @@ public class PlayerMovement : MonoBehaviour
             accel = CalculateAcceleration(playerRB.velocity.x * inputDirection, surfaceProperties[highestPrioritySurface]);
             playerRB.AddForce(new Vector2(XInput * accel * Time.fixedDeltaTime, 0), ForceMode2D.Impulse);
         }
+        #endregion
 
+        #region Deceleration
         //DECELERATION
-        
         //Update decel function in the future to return negative values if given a negative speed?
         float decelX = CalculateDeceleration(Mathf.Abs(playerRB.velocity.x), surfaceProperties[highestPrioritySurface], false);
         float decelY = CalculateDeceleration(Mathf.Abs(playerRB.velocity.y), surfaceProperties[highestPrioritySurface], true);
 
-        //If the deceleration would push the player in the opposite direction
-        //If over current velocity, make it equal to current velocity, otherwise make it the same value, but in the opposite direction of the velocity
-        
+        //First put the decel in the direction opposite the players velocity and calculate for the current frame
+        //If over current velocity, and would push the player in the opposite direction make it equal to current velocity, otherwise leave it
         decelX *= -1 * Mathf.Sign(playerRB.velocity.x) * Time.fixedDeltaTime;
         if(Mathf.Abs(decelX) >= Mathf.Abs(playerRB.velocity.x))
         {
@@ -132,34 +138,14 @@ public class PlayerMovement : MonoBehaviour
             decelY = playerRB.velocity.y * -1;
         }
 
-        //decelX = (decelX >= Mathf.Abs(playerRB.velocity.x) * Time.fixedDeltaTime) ? (playerRB.velocity.x * -1) : decelX * -1 * Mathf.Sign(playerRB.velocity.x);
-        //decelY = (decelY >= Mathf.Abs(playerRB.velocity.y) * Time.fixedDeltaTime) ? (playerRB.velocity.y * -1) : decelY * -1 * Mathf.Sign(playerRB.velocity.y);
-
         //Applies the deceleration force
-        Debug.Log(new Vector2(decelX, decelY));
         playerRB.AddForce(new Vector2(decelX, decelY), ForceMode2D.Impulse);
-        
-        /*
-        Vector2 decelDirection = playerRB.velocity.normalized * -1;
+        #endregion
 
-        float decel = CalculateDeceleration(playerRB.velocity.magnitude, surfaceProperties[highestPrioritySurface]);
-
-        //if the deceleration is greater than velocity, then add a force which will bring velocity to zero
-        if (decel * Time.fixedDeltaTime >= playerRB.velocity.magnitude)
-        {
-            playerRB.AddForce(-1 * playerRB.velocity, ForceMode2D.Impulse);
-        }
-        else
-        {
-            //Applies the deceleration force in the opposite direction of the players velocity
-            playerRB.AddForce(decel * Time.fixedDeltaTime * -1 * playerRB.velocity.normalized, ForceMode2D.Impulse);
-        }
-        */
-
-        //Debug.Log("Accel: " + accel + " Decel: " + decel + " Net: " + (accel * Mathf.Sign(XInput) - decel * playerVelocityDirection) + " Velocity: " + playerRB.velocity.magnitude);
-        //Debug.Log(ControlsManager.Instance.Jump);
-
+        #region Jumping
         //JUMPING
+        //Debug.Log("Frame: " + Time.frameCount + " Touching ground: " + !(highestPrioritySurface == Surface.air));
+
         if (!ControlsManager.Instance.Jump)
         {
             if(heldJump)
@@ -168,19 +154,12 @@ public class PlayerMovement : MonoBehaviour
             }
 
             heldJump = false;
-            stillTouchingJumpSurface = false;
 
         }
-        //StillTouchingJumpSurface is a safety to prevent jumping, but not leaving the ground, meaning that you could jump an infinite number of time
-        //Also I believe you are still touching the ground for one more frame after jumping, so you would jump twice without it
-        if (highestPrioritySurface == Surface.air)
+        //If pressing Jump
+        else 
         {
-            stillTouchingJumpSurface = false;
-        }
-
-        if (ControlsManager.Instance.Jump)
-        {
-            //This order of conditions means that if you have held the spacebar since you won't jump again until you release and press it again
+            //This order of conditions means that if you have held the spacebar you won't jump again until you release and press it again
             //This can be changed to auto jump after the max force has been given (by setting heldJump to false after the time is up)
             //Or it can be completely removed (by changing the else if to and if)
 
@@ -192,16 +171,22 @@ public class PlayerMovement : MonoBehaviour
                 {
                     playerRB.AddForce(extraJumpForce * Time.fixedDeltaTime * jumpDirection, ForceMode2D.Impulse);
                 }
-                else if (timeAfterJump > maxExtraJumpTime)
-                {
-                    stillTouchingJumpSurface = false;
-                }
             }
-
             //If holding jump and able to jump then jump
-            else if (surfaceProperties[highestPrioritySurface].canJump && !stillTouchingJumpSurface)
+            else if (surfaceProperties[highestPrioritySurface].canJump)
             {
-                jumpDirection = (totalContactNormals.normalized + jumpBias).normalized;
+                //Finds the closest contact normal to vertical
+                Vector2 mostVerticalNormal = Vector2.down;
+
+                foreach (Vector2 normal in contactNormals)
+                {
+                    if(normal.y > mostVerticalNormal.y)
+                    {
+                        mostVerticalNormal = normal;
+                    }
+                }
+
+                jumpDirection = (mostVerticalNormal.normalized + jumpBias).normalized;
                 Vector2 force = jumpDirection * jumpForce;
 
                 //Add forces from charged walls into jump
@@ -216,23 +201,22 @@ public class PlayerMovement : MonoBehaviour
                 savedChargedForces.Clear();
                 playerRB.AddForce(force, ForceMode2D.Impulse);
 
-                stillTouchingJumpSurface = true;
                 heldJump = true;
                 jumpTime = Time.timeAsDouble;
-                //Debug.Log("Jump");
+                jumpedLastFrame = true;
+                Debug.Log("Frame: " + Time.frameCount + " Jump");
             }
         }
+        #endregion
 
-
+        //Reset variables for detection between frames
         highestPrioritySurface = Surface.air;
-        totalContactNormals = Vector3.zero;
+        contactNormals.Clear();
     }
 
+    #region Collision Detection and Calculations
     void OnCollisionEnter2D(Collision2D col)
     {
-        //Debug.Log(col.gameObject.name);
-        //Debug.Log(col.collider.gameObject.name);
-
         UpdateCollisionInfo(col);
 
         //Saving charges for charged walls
@@ -266,7 +250,6 @@ public class PlayerMovement : MonoBehaviour
         UpdateCollisionInfo(col);
     }
 
-
     private void OnCollisionExit2D(Collision2D col)
     {
         //Debug.Log(col.gameObject.name);
@@ -287,12 +270,12 @@ public class PlayerMovement : MonoBehaviour
     {
         string tag = col.gameObject.tag;
 
-        //adds the average direction of the contact normal (for finding jumping direction) 
         ContactPoint2D[] contacts = new ContactPoint2D[col.contactCount];
         col.GetContacts(contacts);
+
         foreach (ContactPoint2D point in contacts)
         {
-            totalContactNormals += point.normal;
+            contactNormals.Add(point.normal);
         }
 
         //If the tag matches a surface type, and that surface is higher in priority than the current highest, then replace the highest priority surface
@@ -315,57 +298,27 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
+    #endregion
+
+    #region Other Functions
+    /*public void SetKinematic(bool isKinematic)
+    {
+        playerRB.isKinematic = isKinematic;
+    }*/
 
     public void ResetMovement()
     {
         playerRB.velocity = Vector2.zero;
         playerRB.angularVelocity = 0;
 
-        stillTouchingJumpSurface = false;
+        jumpedLastFrame = false;
         heldJump = false;
+        savedChargedForces.Clear();
+
+        //Not needed I think:
         jumpDirection = Vector2.zero;
         highestPrioritySurface = Surface.air;
-        totalContactNormals = Vector3.zero;
-        savedChargedForces.Clear();
-    }
-
-    private readonly struct MovementValues
-    {
-        public readonly float maxAccel, maxAccelEnd, minAccelStart, minAccel;
-
-        public readonly float maxDecel, decelFalloff, minDecel, verticalDecelMultiplier;
-
-        public readonly bool canJump;
-
-        public MovementValues(float maxAccel, float maxAccelEnd, float minAccelStart, float minAccel, float maxDecel, float decelFalloff, float minDecel, float verticalDecelMultiplier, bool canJump)
-        {
-            this.maxAccel = maxAccel;
-            this.maxAccelEnd = maxAccelEnd;
-            this.minAccelStart = minAccelStart;
-            this.minAccel = minAccel;
-
-            this.maxDecel = maxDecel;
-            this.decelFalloff = decelFalloff;
-            this.minDecel = minDecel;
-            this.verticalDecelMultiplier = verticalDecelMultiplier;
-
-            this.canJump = canJump;
-        }
-
-        public MovementValues(MovementValues baseValues, float? maxAccel, float? maxAccelEnd = null, float? minAccelStart = null, float? minAccel = null, float? maxDecel = null, float? decelFalloff = null, float? minDecel = null, float? verticalDecelMultiplier = null, bool? canJump = null)
-        {
-            this.maxAccel = maxAccel ?? baseValues.maxAccel;
-            this.maxAccelEnd = maxAccelEnd ?? baseValues.maxAccelEnd;
-            this.minAccelStart = minAccelStart ?? baseValues.minAccelStart;
-            this.minAccel = minAccel ?? baseValues.minAccel;
-
-            this.maxDecel = maxDecel ?? baseValues.maxDecel;
-            this.decelFalloff = decelFalloff ?? baseValues.decelFalloff;
-            this.minDecel = minDecel ?? baseValues.minDecel;
-            this.verticalDecelMultiplier = verticalDecelMultiplier ?? baseValues.verticalDecelMultiplier;
-
-            this.canJump = canJump ?? baseValues.canJump;
-        }
+        contactNormals.Clear();
     }
 
     /*
@@ -442,4 +395,46 @@ public class PlayerMovement : MonoBehaviour
         return (yDecel) ? (decel * values.verticalDecelMultiplier) : (decel);
 
     }
+    #endregion
+
+    #region Structs
+    private readonly struct MovementValues
+    {
+        public readonly float maxAccel, maxAccelEnd, minAccelStart, minAccel;
+
+        public readonly float maxDecel, decelFalloff, minDecel, verticalDecelMultiplier;
+
+        public readonly bool canJump;
+
+        public MovementValues(float maxAccel, float maxAccelEnd, float minAccelStart, float minAccel, float maxDecel, float decelFalloff, float minDecel, float verticalDecelMultiplier, bool canJump)
+        {
+            this.maxAccel = maxAccel;
+            this.maxAccelEnd = maxAccelEnd;
+            this.minAccelStart = minAccelStart;
+            this.minAccel = minAccel;
+
+            this.maxDecel = maxDecel;
+            this.decelFalloff = decelFalloff;
+            this.minDecel = minDecel;
+            this.verticalDecelMultiplier = verticalDecelMultiplier;
+
+            this.canJump = canJump;
+        }
+
+        public MovementValues(MovementValues baseValues, float? maxAccel, float? maxAccelEnd = null, float? minAccelStart = null, float? minAccel = null, float? maxDecel = null, float? decelFalloff = null, float? minDecel = null, float? verticalDecelMultiplier = null, bool? canJump = null)
+        {
+            this.maxAccel = maxAccel ?? baseValues.maxAccel;
+            this.maxAccelEnd = maxAccelEnd ?? baseValues.maxAccelEnd;
+            this.minAccelStart = minAccelStart ?? baseValues.minAccelStart;
+            this.minAccel = minAccel ?? baseValues.minAccel;
+
+            this.maxDecel = maxDecel ?? baseValues.maxDecel;
+            this.decelFalloff = decelFalloff ?? baseValues.decelFalloff;
+            this.minDecel = minDecel ?? baseValues.minDecel;
+            this.verticalDecelMultiplier = verticalDecelMultiplier ?? baseValues.verticalDecelMultiplier;
+
+            this.canJump = canJump ?? baseValues.canJump;
+        }
+    }
+    #endregion
 }

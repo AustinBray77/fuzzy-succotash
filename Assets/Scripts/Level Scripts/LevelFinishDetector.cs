@@ -14,6 +14,4 @@ public class LevelFinishDetector : MonoBehaviour
             LevelHandler.Instance.CurrentLevelController.LevelCompleted();
         }
     }
-
-
 }
