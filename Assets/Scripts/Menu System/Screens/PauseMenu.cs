@@ -31,8 +31,13 @@ public class PauseMenu : MonoBehaviour, IScreen
     #region Button_Methods
     public void OnClick_Resume()
     {
+        StartCoroutine(OnClick_Resume_Coroutine());
+    }
+
+    private IEnumerator OnClick_Resume_Coroutine()
+    {
+        yield return StartCoroutine(MenuController.Instance.OpenScreen("Game", false, false));
         LevelHandler.Instance.CurrentLevelController.UnpauseFromPauseMenu();
-        StartCoroutine(MenuController.Instance.OpenScreen("Game", false, false));
     }
 
     public void OnClick_RestartStage()

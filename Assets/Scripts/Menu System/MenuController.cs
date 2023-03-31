@@ -71,7 +71,10 @@ public class MenuController : Singleton<MenuController>
             yield return StartCoroutine(AnimationManager.Instance.FadeIn());
         }
 
+        //Change this later?
+        //It's breaking input maps on everythin
         ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.menus);
+        
         _inputSystem.enabled = true;
     }
 }

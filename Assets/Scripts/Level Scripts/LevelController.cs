@@ -169,6 +169,7 @@ public class LevelController : MonoBehaviour
 
     private void PausePressed()
     {
+        
         if (levelPaused)
         {
             Unpause();
@@ -181,12 +182,12 @@ public class LevelController : MonoBehaviour
 
     private void Unpause()
     {
-        //Remove this once inputs are added to menus
-        StartCoroutine(MenuController.Instance.OpenScreen("Game", false, false));
-
+        //Need to wait for the menu transition to finish before unpausing
         Time.timeScale = 1;
         ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.gameplay, ControlsManager.InputMap.pause);
         levelPaused = false;
+        Debug.Log("Unpausing");
+        //Debug.Log(Player.Instance.Data.RespawningState);
     }
 
     private void Pause()
@@ -196,6 +197,7 @@ public class LevelController : MonoBehaviour
         levelPaused = true;
 
         StartCoroutine(MenuController.Instance.OpenScreen("PauseMenu", false, false));
+        Debug.Log("Pausing");
     }
 
     public void LevelCompleted()
