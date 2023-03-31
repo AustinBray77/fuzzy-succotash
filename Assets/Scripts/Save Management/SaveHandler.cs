@@ -64,27 +64,29 @@ public class SaveHandler : Singleton<SaveHandler>
         }
 
         //Recreates the save file
-        FileStream saveFileStream = File.Create(_saveFilePath);
-        BinaryFormatter formatter = new BinaryFormatter();
-
-        //Loops through and serializes each component
-        foreach (var currentComponent in _saveableComponents.Values)
+        using (FileStream saveFileStream = File.Create(_saveFilePath))
         {
-            try
-            {
-                //Serializes the data into the file
-                formatter.Serialize(saveFileStream, currentComponent.Serialize());
-            }
-            catch (Exception e)
-            {
-                //Logs the error if there is one
-                Debug.LogError(e.Message);
-                saveFileStream.Close();
-            }
-        }
+            BinaryFormatter formatter = new BinaryFormatter();
 
-        //Closes the file
-        saveFileStream.Close();
+            //Loops through and serializes each component
+            foreach (var currentComponent in _saveableComponents.Values)
+            {
+                try
+                {
+                    //Serializes the data into the file
+                    formatter.Serialize(saveFileStream, currentComponent.Serialize());
+                }
+                catch (Exception e)
+                {
+                    //Logs the error if there is one
+                    Debug.LogError(e.Message);
+                    saveFileStream.Close();
+                }
+            }
+
+            //Closes the file
+            saveFileStream.Close();
+        }
     }
 
     //Method for loading data
@@ -97,19 +99,21 @@ public class SaveHandler : Singleton<SaveHandler>
         }
 
         //Opens the save file and formatter
-        FileStream saveFileStream = File.OpenRead(_saveFilePath);
-        BinaryFormatter formatter = new BinaryFormatter();
-
-        //Deserialize the data
-        ComponentData[] components = (ComponentData[])formatter.Deserialize(saveFileStream);
-
-        //Reassign each value to its component
-        foreach (var currentComponent in components)
+        using (FileStream saveFileStream = File.OpenRead(_saveFilePath))
         {
-            GetSaveableComponent(currentComponent.GetValueString("ID")).Deserialize(currentComponent);
-        }
+            BinaryFormatter formatter = new BinaryFormatter();
 
-        //Closes the file
-        saveFileStream.Close();
+            //Deserialize the data
+            ComponentData[] components = (ComponentData[])formatter.Deserialize(saveFileStream);
+
+            //Reassign each value to its component
+            foreach (var currentComponent in components)
+            {
+                GetSaveableComponent(currentComponent.GetValueString("ID")).Deserialize(currentComponent);
+            }
+
+            //Closes the file
+            saveFileStream.Close();
+        }
     }
 }

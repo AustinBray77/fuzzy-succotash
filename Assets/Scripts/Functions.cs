@@ -42,4 +42,7 @@ public class Functions
 
         return outputArr;
     }
+
+    public static double RoundToDecimalPlaces(double d, int decimalPlaces)
+        => System.Math.Round(d * System.Math.Pow(10, decimalPlaces)) / System.Math.Pow(10, decimalPlaces);
 }

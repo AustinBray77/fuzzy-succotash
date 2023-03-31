@@ -25,6 +25,7 @@ public class LevelController : MonoBehaviour
     private double levelStartTime;
     private double lastCompletionTime;
 
+    public double LevelStartTime { get => levelStartTime; }
     public double LevelCompletionTime { get => lastCompletionTime; }
 
     private void OnEnable()
@@ -115,7 +116,7 @@ public class LevelController : MonoBehaviour
         yield return new WaitForFixedUpdate(); //If you do not wait for a fixed update, there is variation in the start time relative to the next fixed update, adding randomness to the finish time
 
         StartRun();
-        
+
         //StartRun();
         //Fade out
         /*if (!AnimationManager.Instance.FadeToColour(Color.black, SpawnPlayerPart2))
@@ -150,7 +151,7 @@ public class LevelController : MonoBehaviour
         ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.gameplay, ControlsManager.InputMap.pause);
 
         levelStartTime = Time.timeAsDouble;
-        
+
         //This should be done earlier, otherwise countdown will never finish
         Time.timeScale = 1;
 
