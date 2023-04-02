@@ -24,13 +24,13 @@ public class EndLevelScreen : MonoBehaviour, IScreen
     public void Load()
     {
         timerText.text = timerPrefix + LevelHandler.Instance.CurrentLevelController.LevelCompletionTime;
-        Functions.SetActiveAllObjects(ScreenElements, true);
+        ScreenElements.SetActiveAllObjects(true);
     }
 
     //Method for unloading the screen
     public void Unload()
     {
-        Functions.SetActiveAllObjects(ScreenElements, false);
+        ScreenElements.SetActiveAllObjects(false);
     }
 
     #region Button_Methods

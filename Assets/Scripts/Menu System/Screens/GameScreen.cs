@@ -20,13 +20,13 @@ public class GameScreen : MonoBehaviour, IScreen
 
     public void Load()
     {
-        Functions.SetActiveAllObjects(ScreenElements, true);
+        ScreenElements.SetActiveAllObjects(true);
         _loaded = true;
     }
 
     public void Unload()
     {
-        Functions.SetActiveAllObjects(ScreenElements, false);
+        ScreenElements.SetActiveAllObjects(false);
         _loaded = false;
     }
 
@@ -34,8 +34,7 @@ public class GameScreen : MonoBehaviour, IScreen
     {
         if (!_loaded) return;
 
-        _timerText.text = Functions.RoundToDecimalPlaces(
-            Time.timeAsDouble - LevelHandler.Instance.CurrentLevelController.LevelStartTime,
-            1).ToString() + "s";
+        _timerText.text = (Time.timeAsDouble - LevelHandler.Instance.CurrentLevelController.LevelStartTime)
+            .RoundToDecimalPlaces(1).ToString() + "s";
     }
 }

@@ -53,8 +53,7 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
 
     public void Load()
     {
-        Functions.SetActiveAllObjects(ScreenElements, true);
-
+        ScreenElements.SetActiveAllObjects(true);
         _currentLevelPage = 0;
         ReloadPages();
 
@@ -64,7 +63,7 @@ public class LevelSelectScreen : MonoBehaviour, IScreen
 
     public void Unload()
     {
-        Functions.SetActiveAllObjects(ScreenElements, false);
+        ScreenElements.SetActiveAllObjects(false);
         _pages[_currentLevelPage].Object.SetActive(false);
     }
 

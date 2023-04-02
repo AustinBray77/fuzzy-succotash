@@ -25,8 +25,8 @@ public class LevelProgresser
         {
             _activations = oldStage._activations;
             _deactivations = oldStage._deactivations;
-            Activations = Functions.SwapArrayType<IToggleableObject, MonoBehaviour>(_activations);
-            Deactivations = Functions.SwapArrayType<IToggleableObject, MonoBehaviour>(_deactivations);
+            Activations = _activations.SwapArrayType<IToggleableObject, MonoBehaviour>();
+            Deactivations = _deactivations.SwapArrayType<IToggleableObject, MonoBehaviour>();
         }
     }
 
@@ -54,7 +54,7 @@ public class LevelProgresser
         inactiveObjects = new List<IToggleableObject>[numberOfStages];
 
         Debug.Log("Initializing Level Progresser, Active Objects: " + stages[0].Activations.Length + " Disabled Objects: " + stages[0].Deactivations.Length);
-        
+
 
         for (int i = 0; i < numberOfStages; i++)
         {

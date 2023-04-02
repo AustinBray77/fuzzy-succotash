@@ -15,13 +15,13 @@ public class MainScreen : MonoBehaviour, IScreen
     //Method for loading the screen in
     public void Load()
     {
-        Functions.SetActiveAllObjects(ScreenElements, true);
+        ScreenElements.SetActiveAllObjects(true);
     }
 
     //Method for unloading the screen
     public void Unload()
     {
-        Functions.SetActiveAllObjects(ScreenElements, false);
+        ScreenElements.SetActiveAllObjects(false);
     }
 
     #region Button_Methods
