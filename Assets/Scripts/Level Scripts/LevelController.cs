@@ -17,6 +17,7 @@ public class LevelController : MonoBehaviour
     [SerializeField] private string _title;
     [SerializeField] private LevelProgresser levelChanges;
     [SerializeField] private float deathHeight;
+    [SerializeField] private LightMapController _lightMapController;
 
     private const float waitTimeBeforeStart = 0.25f;
 
@@ -63,6 +64,11 @@ public class LevelController : MonoBehaviour
         _numberOfStages = levelChanges.GetNumberOfStagesPreInit();
         _data = new LevelData("level_" + _id, _numberOfStages, _title, index);
         SaveHandler.Instance.AddSaveableComponent(_data);
+
+        if (_lightMapController != null)
+        {
+            _lightMapController.Initialize();
+        }
     }
 
     public void OnSpawn()
@@ -170,7 +176,7 @@ public class LevelController : MonoBehaviour
 
     private void PausePressed()
     {
-        
+
         if (levelPaused)
         {
             Unpause();

@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 184bc53343b91f44bb32435a061a27ff, type: 3}
+  m_Name: Soft Light
+  m_EditorClassIdentifier: 
+  tiles:
+  - {fileID: 11400000, guid: f292c2bcf5635bc4cb078dab20c1a524, type: 2}
+  Light: {fileID: 6567138924995832379, guid: d2cd2b7d623191b478632c8f6819aaca, type: 3}
