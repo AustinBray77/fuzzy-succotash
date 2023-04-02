@@ -9,6 +9,7 @@ TagManager:
   - Bouncer
   - Damage
   - Blower
+  - Booster
   layers:
   - Default
   - TransparentFX

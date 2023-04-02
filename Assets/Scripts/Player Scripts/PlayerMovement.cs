@@ -19,7 +19,8 @@ public class PlayerMovement : MonoBehaviour
         chargedGround,
         bouncer,
         blower,
-        ground
+        ground,
+        booster
     }
 
     public static readonly List<Tuple<string, Surface>> tagToSurface = new List<Tuple<string, Surface>>()
@@ -27,7 +28,8 @@ public class PlayerMovement : MonoBehaviour
         new Tuple<string, Surface> ("Ground", Surface.ground),
         new Tuple<string, Surface> ("Charged Ground", Surface.chargedGround),
         new Tuple<string, Surface> ("Bouncer", Surface.bouncer),
-        new Tuple<string, Surface> ("Blower", Surface.blower)
+        new Tuple<string, Surface> ("Blower", Surface.blower),
+        new Tuple<string, Surface> ("Booster", Surface.booster)
     };
 
     public static string TagFromSurface(Surface surface)
@@ -62,7 +64,8 @@ public class PlayerMovement : MonoBehaviour
         {Surface.ground,        groundVals},
         {Surface.chargedGround, groundVals},
         {Surface.bouncer,       groundVals},
-        {Surface.blower,        groundVals}
+        {Surface.blower,        groundVals},
+        {Surface.booster,       groundVals}
     };
 
     //Jumping
@@ -71,7 +74,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector2 jumpDirection = Vector2.zero;
     private List<Tuple<Collider2D, Vector2>> savedChargedForces = new();
-    
+
     private double jumpTime = 0;
     private bool heldJump = false;
     private bool jumpedLastFrame = false;
@@ -91,7 +94,7 @@ public class PlayerMovement : MonoBehaviour
     public void Initialize()
     {
         playerRB = GetComponent<Rigidbody2D>();
-        Time.fixedDeltaTime = (float) 1 / 100; //100 fps
+        Time.fixedDeltaTime = (float)1 / 100; //100 fps
         playerRB.gravityScale = gravityScale;
 
         ResetMovement();
@@ -99,7 +102,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(jumpedLastFrame)
+        if (jumpedLastFrame)
         {
             highestPrioritySurface = Surface.air;
             jumpedLastFrame = false;
@@ -127,7 +130,7 @@ public class PlayerMovement : MonoBehaviour
         //First put the decel in the direction opposite the players velocity and calculate for the current frame
         //If over current velocity, and would push the player in the opposite direction make it equal to current velocity, otherwise leave it
         decelX *= -1 * Mathf.Sign(playerRB.velocity.x) * Time.fixedDeltaTime;
-        if(Mathf.Abs(decelX) >= Mathf.Abs(playerRB.velocity.x))
+        if (Mathf.Abs(decelX) >= Mathf.Abs(playerRB.velocity.x))
         {
             decelX = playerRB.velocity.x * -1;
         }
@@ -148,7 +151,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (!ControlsManager.Instance.Jump)
         {
-            if(heldJump)
+            if (heldJump)
             {
                 Debug.Log("Time Jump Key Held: " + (Time.timeAsDouble - jumpTime));
             }
@@ -157,7 +160,7 @@ public class PlayerMovement : MonoBehaviour
 
         }
         //If pressing Jump
-        else 
+        else
         {
             //This order of conditions means that if you have held the spacebar you won't jump again until you release and press it again
             //This can be changed to auto jump after the max force has been given (by setting heldJump to false after the time is up)
@@ -180,7 +183,7 @@ public class PlayerMovement : MonoBehaviour
 
                 foreach (Vector2 normal in contactNormals)
                 {
-                    if(normal.y > mostVerticalNormal.y)
+                    if (normal.y > mostVerticalNormal.y)
                     {
                         mostVerticalNormal = normal;
                     }
@@ -362,7 +365,7 @@ public class PlayerMovement : MonoBehaviour
             float x1 = values.maxAccelEnd;
             float x2 = values.minAccelStart;
 
-            accel = ( (maxA - minA) / 2 * Mathf.Cos(Mathf.PI * (velocity - x1) / (x2 - x1)) ) + ((maxA + minA) / 2);
+            accel = ((maxA - minA) / 2 * Mathf.Cos(Mathf.PI * (velocity - x1) / (x2 - x1))) + ((maxA + minA) / 2);
         }
         else
         {
