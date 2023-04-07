@@ -59,6 +59,9 @@ public class LevelCard : MonoBehaviour
 
     public void ReloadData()
     {
-
+        for (int i = 0; i < _stars.Length; i++)
+        {
+            _stars[i].SetStarState(LevelHandler.Instance.LevelReferences[_levelReference.Index].GetStageState(i));
+        }
     }
 }

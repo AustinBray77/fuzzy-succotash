@@ -139,6 +139,14 @@ MonoBehaviour:
   _title: Test 3
   levelChanges:
     stages:
+    - _activations: []
+      _deactivations:
+      - {fileID: 6790893666176426980}
+      - {fileID: 5631749752835462747}
+    - _activations:
+      - {fileID: 6790893666176426980}
+      _deactivations:
+      - {fileID: 5631749752835462747}
     - _activations:
       - {fileID: 6790893666176426980}
       - {fileID: 5631749752835462747}

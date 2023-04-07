@@ -9,9 +9,9 @@ public class Star : MonoBehaviour
     public const float STAR_SIZE = 25;
 
 
-    [SerializeField] private Image _complete;
-    [SerializeField] private Image _incomplete;
-    [SerializeField] private Image _locked;
+    [SerializeField] private Sprite _complete;
+    [SerializeField] private Sprite _incomplete;
+    [SerializeField] private Sprite _locked;
 
     private Button _mainButton;
 
@@ -31,20 +31,23 @@ public class Star : MonoBehaviour
         }
 
         _mainButton.onClick.AddListener(onClick);
+
+        SetStarState(LevelHandler.Instance.LevelReferences[level].GetStageState(stage));
     }
 
-    public void SetStarState(int state)
+    public void SetStarState(StageState state)
     {
         switch (state)
         {
-            case 0:
-                _mainButton.image = _locked;
+            case StageState.Locked:
+                _mainButton.image.sprite = _locked;
+                _mainButton.enabled = false;
                 return;
-            case 1:
-                _mainButton.image = _incomplete;
+            case StageState.Unlocked:
+                _mainButton.image.sprite = _incomplete;
                 return;
-            case 2:
-                _mainButton.image = _complete;
+            case StageState.Completed:
+                _mainButton.image.sprite = _complete;
                 return;
             default:
                 Debug.LogWarning("Invalid state passed into SetStarState()");
