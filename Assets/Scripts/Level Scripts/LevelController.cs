@@ -252,6 +252,31 @@ public class LevelController : MonoBehaviour
         ControlsManager.Instance.RemoveCallBack(ControlsManager.Actions.pause, PausePressedCallback);
     }
 
+    public StageState GetStageState(int stage)
+    {
+        if (stage < 0 || stage >= _numberOfStages)
+        {
+            return StageState.Locked;
+        }
+
+        if (_data.Completions[stage] > 0)
+        {
+            return StageState.Completed;
+        }
+
+        if (stage == 0)
+        {
+            return StageState.Unlocked;
+        }
+
+        if (_data.Completions[stage - 1] > 0)
+        {
+            return StageState.Unlocked;
+        }
+
+        return StageState.Locked;
+    }
+
     public enum RespawnInfo
     {
         playerDied,
