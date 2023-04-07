@@ -54,8 +54,13 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region Variables
-    private static MovementValues groundVals = new MovementValues(40, 8, 12, 30, 29, 0.05f, 5, 0.5f, true);
-    private static MovementValues airVals = new MovementValues(7, 5, 8, 6, 6, 0.05f, 1, 0.5f, false);
+    private static MovementValues groundVals = new MovementValues(40, 8, 12, 30, 29, 0.05f, 5, 0f, true);
+    private static MovementValues airVals = new MovementValues(7, 5, 8, 6, 6, 0.05f, 1, 0f, false);
+
+    //default vertical decel values
+    private readonly MovementValues verticalDecelVals = new MovementValues(0, 0, 0, 0, 3, 0.1f, 0.5f, 1, false);
+
+
 
     //Movement Physics Constants
     private readonly Dictionary<Surface, MovementValues> surfaceProperties = new()
@@ -70,25 +75,36 @@ public class PlayerMovement : MonoBehaviour
 
     //Jumping
     private const float jumpForce = 10f;
-    private readonly Vector2 jumpBias = new Vector2(0, 0.5f);
+    private readonly Vector2 jumpBias = new Vector2(0, 0.8f);
 
-    private Vector2 jumpDirection = Vector2.zero;
+    private Vector2 currentJumpDirection = Vector2.zero;
+    private Vector2 lastJumpDirection = Vector2.zero;
     private List<Tuple<Collider2D, Vector2>> savedChargedForces = new();
+
+    //Jump buffer before colliding is not needed very much, compared to buffer after leaving
+    private const double jumpBufferBeforeColliding = 0.04;
+    private double lastJumpPressedTime;
+    private bool jumpQueued = false;
 
     private double jumpTime = 0;
     private bool heldJump = false;
     private bool jumpedLastFrame = false;
 
+    private const double jumpBufferAfterLeaving = 0.06;
+    private bool ableToJumpAfterLeavingGround = false;
+    private double lastTimeOnGround;
+    private JumpInfo lastGroundJumpInfo;
+
     //Should these be specific to surfaces?
-    private double minExtraJumpTime = 0.08; //Time after jump when extra jump force starts applying 
-    private double maxExtraJumpTime = 0.4; //Time after jump when extra jump force stops applying
-    private float extraJumpForce = 20f; //per second
+    private const double minExtraJumpTime = 0.08; //Time after jump when extra jump force starts applying 
+    private const double maxExtraJumpTime = 0.4; //Time after jump when extra jump force stops applying
+    private const float extraJumpForce = 20f; //per second
 
     private Surface highestPrioritySurface = Surface.air;
     private Rigidbody2D playerRB;
     private List<Vector2> contactNormals = new();
 
-    private float gravityScale = 2f;
+    private const float gravityScale = 2f;
     #endregion
 
     public void Initialize()
@@ -125,7 +141,9 @@ public class PlayerMovement : MonoBehaviour
         //DECELERATION
         //Update decel function in the future to return negative values if given a negative speed?
         float decelX = CalculateDeceleration(Mathf.Abs(playerRB.velocity.x), surfaceProperties[highestPrioritySurface], false);
-        float decelY = CalculateDeceleration(Mathf.Abs(playerRB.velocity.y), surfaceProperties[highestPrioritySurface], true);
+        //The y deceleration is a combination of the surface + the default air deceleration
+        float decelY = CalculateDeceleration(Mathf.Abs(playerRB.velocity.y), surfaceProperties[highestPrioritySurface], true)
+                     + CalculateDeceleration(Mathf.Abs(playerRB.velocity.y), verticalDecelVals, false);
 
         //First put the decel in the direction opposite the players velocity and calculate for the current frame
         //If over current velocity, and would push the player in the opposite direction make it equal to current velocity, otherwise leave it
@@ -149,15 +167,37 @@ public class PlayerMovement : MonoBehaviour
         //JUMPING
         //Debug.Log("Frame: " + Time.frameCount + " Touching ground: " + !(highestPrioritySurface == Surface.air));
 
+        //Generate jumping info
+        if (surfaceProperties[highestPrioritySurface].canJump)
+        {
+            //Finds the closest contact normal to vertical
+            Vector2 mostVerticalNormal = Vector2.down;
+
+            foreach (Vector2 normal in contactNormals)
+            {
+                if (normal.y > mostVerticalNormal.y)
+                {
+                    mostVerticalNormal = normal;
+                }
+            }
+            currentJumpDirection = (mostVerticalNormal.normalized + jumpBias).normalized;
+
+            lastGroundJumpInfo = new JumpInfo(surfaceProperties[highestPrioritySurface], savedChargedForces, currentJumpDirection);
+
+            ableToJumpAfterLeavingGround = true;
+            lastTimeOnGround = Time.timeAsDouble;
+        }
+        //If not pressing jump
         if (!ControlsManager.Instance.Jump)
         {
-            if (heldJump)
-            {
-                Debug.Log("Time Jump Key Held: " + (Time.timeAsDouble - jumpTime));
-            }
-
             heldJump = false;
 
+            //If jumped just before touching the ground
+            if(jumpQueued && surfaceProperties[highestPrioritySurface].canJump && (Time.timeAsDouble - lastJumpPressedTime <= jumpBufferBeforeColliding))
+            {
+                Jump(lastGroundJumpInfo);
+            }
+            
         }
         //If pressing Jump
         else
@@ -172,42 +212,26 @@ public class PlayerMovement : MonoBehaviour
                 double timeAfterJump = Time.timeAsDouble - jumpTime;
                 if (timeAfterJump >= minExtraJumpTime && timeAfterJump <= maxExtraJumpTime)
                 {
-                    playerRB.AddForce(extraJumpForce * Time.fixedDeltaTime * jumpDirection, ForceMode2D.Impulse);
+                    playerRB.AddForce(extraJumpForce * Time.fixedDeltaTime * lastJumpDirection, ForceMode2D.Impulse);
+                }
+            }
+            //If pressing jump but not on the ground
+            else if(!surfaceProperties[highestPrioritySurface].canJump)
+            {
+                if (ableToJumpAfterLeavingGround && (Time.timeAsDouble - lastTimeOnGround <= jumpBufferAfterLeaving))
+                {
+                    Jump(lastGroundJumpInfo);
+                }
+                else
+                {
+                    jumpQueued = true;
+                    lastJumpPressedTime = Time.timeAsDouble;
                 }
             }
             //If holding jump and able to jump then jump
-            else if (surfaceProperties[highestPrioritySurface].canJump)
+            else
             {
-                //Finds the closest contact normal to vertical
-                Vector2 mostVerticalNormal = Vector2.down;
-
-                foreach (Vector2 normal in contactNormals)
-                {
-                    if (normal.y > mostVerticalNormal.y)
-                    {
-                        mostVerticalNormal = normal;
-                    }
-                }
-
-                jumpDirection = (mostVerticalNormal.normalized + jumpBias).normalized;
-                Vector2 force = jumpDirection * jumpForce;
-
-                //Add forces from charged walls into jump
-                if (savedChargedForces.Count > 0)
-                {
-                    foreach (Tuple<Collider2D, Vector2> item in savedChargedForces)
-                    {
-                        force += item.Item2;
-                    }
-                }
-
-                savedChargedForces.Clear();
-                playerRB.AddForce(force, ForceMode2D.Impulse);
-
-                heldJump = true;
-                jumpTime = Time.timeAsDouble;
-                jumpedLastFrame = true;
-                Debug.Log("Frame: " + Time.frameCount + " Jump");
+                Jump(lastGroundJumpInfo);
             }
         }
         #endregion
@@ -216,6 +240,8 @@ public class PlayerMovement : MonoBehaviour
         highestPrioritySurface = Surface.air;
         contactNormals.Clear();
     }
+
+
 
     #region Collision Detection and Calculations
     void OnCollisionEnter2D(Collision2D col)
@@ -309,6 +335,32 @@ public class PlayerMovement : MonoBehaviour
         playerRB.isKinematic = isKinematic;
     }*/
 
+    private void Jump(JumpInfo info)
+    {
+        Vector2 force = info.jumpDirection * jumpForce;
+
+        //Add forces from charged walls into jump
+        if (info.savedForces.Count > 0)
+        {
+            foreach (Tuple<Collider2D, Vector2> item in savedChargedForces)
+            {
+                force += item.Item2;
+            }
+        }
+
+        playerRB.AddForce(force, ForceMode2D.Impulse);
+
+        heldJump = true;
+        jumpTime = Time.timeAsDouble;
+        jumpedLastFrame = true;
+        Debug.Log("Frame: " + Time.frameCount + " Jump");
+
+        ableToJumpAfterLeavingGround = false;
+        jumpQueued = false;
+
+        lastJumpDirection = info.jumpDirection;
+    }
+
     public void ResetMovement()
     {
         playerRB.velocity = Vector2.zero;
@@ -317,9 +369,9 @@ public class PlayerMovement : MonoBehaviour
         jumpedLastFrame = false;
         heldJump = false;
         savedChargedForces.Clear();
+        jumpQueued = false;
 
-        //Not needed I think:
-        jumpDirection = Vector2.zero;
+    //Not needed I think:
         highestPrioritySurface = Surface.air;
         contactNormals.Clear();
     }
@@ -349,7 +401,7 @@ public class PlayerMovement : MonoBehaviour
     }
     */
 
-    float CalculateAcceleration(float velocity, MovementValues values)
+    private float CalculateAcceleration(float velocity, MovementValues values)
     {
         //Desmos for acceleration: https://www.desmos.com/calculator/gcuhlaobxk
         float accel;
@@ -375,7 +427,7 @@ public class PlayerMovement : MonoBehaviour
         return accel;
     }
 
-    float CalculateDeceleration(float velocity, MovementValues values, bool yDecel)
+    private float CalculateDeceleration(float velocity, MovementValues values, bool yDecel)
     {
         //Desmos for Decel: https://www.desmos.com/calculator/yd6t9wniem
 
@@ -401,6 +453,20 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region Structs
+    private readonly struct JumpInfo
+    {
+        public readonly List<Tuple<Collider2D, Vector2>> savedForces;
+        public readonly MovementValues jumpVariables;
+        public readonly Vector2 jumpDirection;
+
+        public JumpInfo(MovementValues jumpSurfaceValues, List<Tuple<Collider2D, Vector2>> savedChargedForces, Vector2 jumpNormal)
+        {
+            jumpVariables = jumpSurfaceValues;
+            savedForces = savedChargedForces;
+            jumpDirection = jumpNormal;
+        }
+    }
+
     private readonly struct MovementValues
     {
         public readonly float maxAccel, maxAccelEnd, minAccelStart, minAccel;
