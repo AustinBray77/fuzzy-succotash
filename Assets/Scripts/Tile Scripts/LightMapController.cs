@@ -10,7 +10,9 @@ public class LightMapController : MonoBehaviour
     [SerializeField] private LightTileData[] _lightTileDatas;
     private Dictionary<TileBase, LightTileData> _lightTileDictionary;
 
-    public void Initialize()
+    private List<GameObject> _lights;
+
+    public void OnSpawn()
     {
         _lightTileDictionary = new Dictionary<TileBase, LightTileData>();
 
@@ -24,11 +26,21 @@ public class LightMapController : MonoBehaviour
 
         Tilemap tileMap = GetComponent<Tilemap>();
 
+        _lights = new List<GameObject>();
+
         foreach (TileData tile in tileMap.GetAllTiles())
         {
             LightTileData lightData = _lightTileDictionary[tile.Tile];
-            Light2D light = Instantiate(lightData.Light, transform);
-            light.transform.localPosition = new Vector3(tile.X + 0.5f, tile.Y + 0.5f);
+            Light2D light = Instantiate(lightData.Light, new Vector3(tile.X + 0.5f, tile.Y + 0.5f), Quaternion.identity);
+            _lights.Add(light.gameObject);
+        }
+    }
+
+    public void OnDestroy()
+    {
+        foreach (GameObject light in _lights)
+        {
+            Destroy(light);
         }
     }
 }
