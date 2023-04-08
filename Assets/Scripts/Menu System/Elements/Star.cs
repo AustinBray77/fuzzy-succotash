@@ -45,9 +45,11 @@ public class Star : MonoBehaviour
                 return;
             case StageState.Unlocked:
                 _mainButton.image.sprite = _incomplete;
+                _mainButton.enabled = true;
                 return;
             case StageState.Completed:
                 _mainButton.image.sprite = _complete;
+                _mainButton.enabled = true;
                 return;
             default:
                 Debug.LogWarning("Invalid state passed into SetStarState()");

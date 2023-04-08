@@ -64,11 +64,6 @@ public class LevelController : MonoBehaviour
         _numberOfStages = levelChanges.GetNumberOfStagesPreInit();
         _data = new LevelData("level_" + _id, _numberOfStages, _title, index);
         SaveHandler.Instance.AddSaveableComponent(_data);
-
-        if (_lightMapController != null)
-        {
-            _lightMapController.Initialize();
-        }
     }
 
     public void OnSpawn()
@@ -78,6 +73,11 @@ public class LevelController : MonoBehaviour
         //Set up the level Progressor so that it can easily move through stages later on
         levelChanges.Initialize();
         _numberOfStages = levelChanges.NumberOfStages;
+
+        if (_lightMapController != null)
+        {
+            _lightMapController.OnSpawn();
+        }
     }
 
     public void RestartLevelFromMenu()
@@ -250,6 +250,14 @@ public class LevelController : MonoBehaviour
         //Removes the callbacks from the actions
         ControlsManager.Instance.RemoveCallBack(ControlsManager.Actions.respawn, RespawnPressedCallback);
         ControlsManager.Instance.RemoveCallBack(ControlsManager.Actions.pause, PausePressedCallback);
+    }
+
+    public void OnDestroy()
+    {
+        if (_lightMapController != null)
+        {
+            Destroy(_lightMapController.gameObject);
+        }
     }
 
     public StageState GetStageState(int stage)
