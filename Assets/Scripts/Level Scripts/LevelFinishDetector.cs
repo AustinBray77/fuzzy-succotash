@@ -11,7 +11,7 @@ public class LevelFinishDetector : MonoBehaviour
 
         if (collision.gameObject.CompareTag(Player.PlayerTag) && !Player.Instance.Data.RespawningState)
         {
-            LevelHandler.Instance.CurrentLevelController.LevelCompleted();
+            StartCoroutine(LevelHandler.Instance.CurrentLevelController.LevelCompleted());
         }
     }
 }

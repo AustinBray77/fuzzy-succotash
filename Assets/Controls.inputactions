@@ -22,15 +22,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
-                },
-                {
-                    "name": "Respawn",
-                    "type": "Button",
-                    "id": "bee0d100-aac7-44c4-9032-5e9786f55958",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -143,39 +134,6 @@
                     "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "4be1218a-bd0e-45c3-9597-692b06cb54ad",
-                    "path": "<Keyboard>/f",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Respawn",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "1d39be18-6a26-46f0-b607-06840db2faaf",
-                    "path": "<Keyboard>/enter",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Respawn",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "047ac4f5-4e72-46fa-af1c-6e60d1c11e8e",
-                    "path": "<DualShockGamepad>/buttonEast",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Respawn",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         },
@@ -241,6 +199,56 @@
                     "processors": "",
                     "groups": "",
                     "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Respawn",
+            "id": "ce27c233-606d-4e20-bc03-e0aabca6ee15",
+            "actions": [
+                {
+                    "name": "Respawn",
+                    "type": "Button",
+                    "id": "d3869804-7e49-4373-aa70-2ffb4f89d16b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "5628ff9b-d710-4338-b57b-73552c0742de",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Respawn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2a86d173-c243-4ece-9f3d-762ed1ac68ee",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Respawn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4ea18466-9933-41fb-b7db-ba243946a663",
+                    "path": "<DualShockGamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Respawn",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

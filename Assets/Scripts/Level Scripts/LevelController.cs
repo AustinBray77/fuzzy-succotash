@@ -38,6 +38,17 @@ public class LevelController : MonoBehaviour
 
     private void RespawnPressedCallback(InputAction.CallbackContext context)
     {
+        StartCoroutine(RespawnPressedCoroutine());
+    }
+
+    private IEnumerator RespawnPressedCoroutine()
+    {
+        //Change to check if the game is in a menu and not the game
+        if (true)
+        {
+            yield return StartCoroutine(MenuController.Instance.OpenScreen("Game", false, false));
+        }
+
         Respawn(RespawnInfo.manualRespawn);
     }
 
@@ -154,7 +165,7 @@ public class LevelController : MonoBehaviour
         Player.Instance.Data.RespawningState = false;
 
         //Enable gameplay inputmap
-        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.gameplay, ControlsManager.InputMap.pause);
+        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.gameplay, ControlsManager.InputMap.pause, ControlsManager.InputMap.respawn);
 
         levelStartTime = Time.timeAsDouble;
 
@@ -191,7 +202,7 @@ public class LevelController : MonoBehaviour
     {
         //Need to wait for the menu transition to finish before unpausing
         Time.timeScale = 1;
-        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.gameplay, ControlsManager.InputMap.pause);
+        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.gameplay, ControlsManager.InputMap.pause, ControlsManager.InputMap.respawn);
         levelPaused = false;
         Debug.Log("Unpausing");
         //Debug.Log(Player.Instance.Data.RespawningState);
@@ -200,14 +211,14 @@ public class LevelController : MonoBehaviour
     private void Pause()
     {
         Time.timeScale = 0;
-        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.menus, ControlsManager.InputMap.pause);
+        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.menus, ControlsManager.InputMap.pause, ControlsManager.InputMap.respawn);
         levelPaused = true;
 
         StartCoroutine(MenuController.Instance.OpenScreen("PauseMenu", false, false));
         Debug.Log("Pausing");
     }
 
-    public void LevelCompleted()
+    public IEnumerator LevelCompleted()
     {
         Player.Instance.Data.RespawningState = true;
 
@@ -224,13 +235,13 @@ public class LevelController : MonoBehaviour
         //If the last stage was completed
         if (currentStage >= _numberOfStages - 1)
         {
-            StartCoroutine(MenuController.Instance.OpenScreen("EndLevelScreen", false, false));
+            yield return StartCoroutine(MenuController.Instance.OpenScreen("EndLevelScreen", false, false));
+            ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.menus, ControlsManager.InputMap.respawn);
         }
         else
         {
             NextStage();
         }
-
     }
 
     private void NextStage()

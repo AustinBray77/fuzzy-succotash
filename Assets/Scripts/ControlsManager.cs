@@ -15,14 +15,16 @@ public class ControlsManager : Singleton<ControlsManager>
     {
         gameplay,
         menus,
-        pause
+        pause,
+        respawn
     }
 
     private readonly Dictionary<InputMap, string> mapNames = new()
     {
         {InputMap.gameplay, "GamePlay" },
         {InputMap.menus, "Menus" },
-        {InputMap.pause, "PauseMenu" }
+        {InputMap.pause, "PauseMenu" },
+        {InputMap.respawn, "Respawn" }
     };
 
     //All actions regardless of InputMap
@@ -59,7 +61,7 @@ public class ControlsManager : Singleton<ControlsManager>
         //Gameplay
         xMovementAction = inputActions.FindActionMap(mapNames[InputMap.gameplay]).FindAction("X Movement");
         jumpAction = inputActions.FindActionMap(mapNames[InputMap.gameplay]).FindAction("Jump");
-        respawnAction = inputActions.FindActionMap(mapNames[InputMap.gameplay]).FindAction("Respawn");
+        respawnAction = inputActions.FindActionMap(mapNames[InputMap.respawn]).FindAction("Respawn");
 
         //Pause
         pauseAction = inputActions.FindActionMap(mapNames[InputMap.pause]).FindAction("Pause");
