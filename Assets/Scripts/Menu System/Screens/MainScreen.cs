@@ -31,12 +31,12 @@ public class MainScreen : MonoBehaviour, IScreen
         //LevelHandler.Instance.LoadLevel(0, 0);
         //Unload();
 
-        StartCoroutine(MenuController.Instance.OpenScreen("LevelSelect"));
+        StartCoroutine(MenuController.Instance.OpenScreen("LevelSelect", inputMapsOnFinish: ControlsManager.InputMap.menus));
     }
 
     public void OnClick_Settings()
     {
-        StartCoroutine(MenuController.Instance.OpenScreen("Settings"));
+        StartCoroutine(MenuController.Instance.OpenScreen("Settings", inputMapsOnFinish: ControlsManager.InputMap.menus));
     }
 
     public void OnClick_Quit()

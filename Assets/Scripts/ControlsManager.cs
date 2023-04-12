@@ -78,14 +78,14 @@ public class ControlsManager : Singleton<ControlsManager>
         };
     }
 
-    public void AddCallBack(Actions action, Action<InputAction.CallbackContext> callback)
+    public void AddCallback(Actions action, Action<InputAction.CallbackContext> callback)
     {
         //Debug.Log(action);
         //Debug.Log(enumToAction[action]);
         enumToAction[action].performed += callback;
     }
 
-    public void RemoveCallBack(Actions action, Action<InputAction.CallbackContext> callback)
+    public void RemoveCallback(Actions action, Action<InputAction.CallbackContext> callback)
     {
         enumToAction[action].performed -= callback;
     }

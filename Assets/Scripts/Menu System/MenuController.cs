@@ -26,7 +26,7 @@ public class MenuController : Singleton<MenuController>
     {
         //Loads the screens to the dictionary
         InitializeScreens();
-        StartCoroutine(OpenScreen("Main"));
+        StartCoroutine(OpenScreen("Main", inputMapsOnFinish: ControlsManager.InputMap.menus));
     }
 
     //Loads all screens from the array into the dictionary
@@ -48,7 +48,7 @@ public class MenuController : Singleton<MenuController>
     }
 
     //Method to load a given screen using the name
-    public IEnumerator OpenScreen(string screenName, bool fadeIn = true, bool fadeOut = true)
+    public IEnumerator OpenScreen(string screenName, bool fadeIn = true, bool fadeOut = true, params ControlsManager.InputMap[] inputMapsOnFinish)
     {
         _inputSystem.enabled = false;
         ControlsManager.Instance.DisableInput();
@@ -71,7 +71,7 @@ public class MenuController : Singleton<MenuController>
             yield return StartCoroutine(AnimationManager.Instance.FadeIn());
         }
 
-        ControlsManager.Instance.SetInputMaps(ControlsManager.InputMap.menus);
+        ControlsManager.Instance.SetInputMaps(inputMapsOnFinish);
         
         _inputSystem.enabled = true;
     }
