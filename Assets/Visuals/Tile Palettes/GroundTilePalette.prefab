@@ -76,7 +76,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 4
-      m_TileSpriteIndex: 4
+      m_TileSpriteIndex: 6
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -96,7 +96,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 0
-      m_TileSpriteIndex: 0
+      m_TileSpriteIndex: 4
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -116,7 +116,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 6
-      m_TileSpriteIndex: 6
+      m_TileSpriteIndex: 0
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -142,7 +142,7 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: f292c2bcf5635bc4cb078dab20c1a524, type: 2}
   m_TileSpriteArray:
   - m_RefCount: 1
-    m_Data: {fileID: 21300000, guid: 2ff0a831c770ec3488800f609832bf1a, type: 3}
+    m_Data: {fileID: 21300000, guid: 48ac735fe90f1074b9cd865f0dbedc26, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: 7a629bf1a846095459669d88b44282b7, type: 3}
   - m_RefCount: 1
@@ -150,11 +150,11 @@ Tilemap:
   - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: d3672e5dfc3b7ab40990a67ccae5e03e, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 21300000, guid: 7ed6763e3b4be6d4e9893e5e0b5c315e, type: 3}
+    m_Data: {fileID: 21300000, guid: 2ff0a831c770ec3488800f609832bf1a, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: 1cf19e095c46b87458a1b2ffa3897e33, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 21300000, guid: 48ac735fe90f1074b9cd865f0dbedc26, type: 3}
+    m_Data: {fileID: 21300000, guid: 7ed6763e3b4be6d4e9893e5e0b5c315e, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 21300000, guid: c56316cac2881a5419b2b53e9473de1c, type: 3}
   m_TileMatrixArray:
@@ -297,7 +297,7 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
---- !u!114 &3994789851611459909
+--- !u!114 &2322390417205015442
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

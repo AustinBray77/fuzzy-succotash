@@ -54,13 +54,11 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region Variables
-    private static MovementValues groundVals = new MovementValues(40, 8, 12, 30, 29, 0.05f, 5, 0f, true);
+    private static MovementValues groundVals = new MovementValues(100, 6, 10, 50, 48, 0.05f, 5, 0f, true);
     private static MovementValues airVals = new MovementValues(7, 5, 8, 6, 6, 0.05f, 1, 0f, false);
 
     //default vertical decel values
     private readonly MovementValues verticalDecelVals = new MovementValues(0, 0, 0, 0, 3, 0.1f, 0.5f, 1, false);
-
-
 
     //Movement Physics Constants
     private readonly Dictionary<Surface, MovementValues> surfaceProperties = new()
@@ -240,8 +238,6 @@ public class PlayerMovement : MonoBehaviour
         highestPrioritySurface = Surface.air;
         contactNormals.Clear();
     }
-
-
 
     #region Collision Detection and Calculations
     void OnCollisionEnter2D(Collision2D col)

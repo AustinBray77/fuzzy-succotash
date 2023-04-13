@@ -3204,6 +3204,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelReferences:
   - {fileID: 4244498509716780663, guid: 1ab23a30c9c920a4490abc3f60352456, type: 3}
+  - {fileID: 4244498509716780663, guid: 188a28863d61b9746a0483909b5c4f3f, type: 3}
+  - {fileID: 4244498509716780663, guid: 85e34f1c2586390419f906c5ae3e7b1d, type: 3}
 --- !u!1 &1093010345
 GameObject:
   m_ObjectHideFlags: 0
